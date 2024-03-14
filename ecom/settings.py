@@ -90,10 +90,12 @@ WSGI_APPLICATION = "ecom.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "wattmart",
-        'USER': "wmart",
-        'PASSWORD': "wmart123",
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sb2050',  
+        'USER': 'sb2050',
+        'PASSWORD': 'wnd4VKSANY3',
+        'HOST': '132.145.18.222',
+        'PORT': '',
     }
 }
 
