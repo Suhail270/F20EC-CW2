@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div id="temp" dataUrl="{% url 'ajax_load_cart_list'%}"></div>
+
+<section class="text-gray-600 body-font overflow-hidden">
+  <div id="item_list" class="container px-5 py-24 mx-auto">
+    {% comment %} cart_list.html {% endcomment %}
+  </div>
+
+    <div class="flex justify-center">
+        <a href="{% url 'payment' %}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full">Proceed to Payment</a>
+    </div>
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  function get_list() {
+    var url = $("#temp").attr("dataUrl");
+    // var fieldId = $(this).find("option:selected").text();
+    // var period = document.getElementById('selectPeriod').value
+    // var agent = document.getElementById('selectAgent').value
+    $.ajax({
+      url: url,
+      data: {},
+      success: function (data) {
+        console.log(data)
+        $("#item_list").html(data.h);
+      }
+    });
+  }
+  get_list();
+</script>
+
+{% endblock content %}
