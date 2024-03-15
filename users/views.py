@@ -5,7 +5,7 @@ import string
 import csv
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
-from .forms import CustomUserCreationForm,SearchForm
+from .forms import CustomUserCreationForm,SearchForm, UserModelForm
 from sales.models import Item
 # Create your views here.
 
@@ -93,3 +93,15 @@ class SearchView(generic.ListView):
         if query:
             return Item.objects.filter(name__icontains=query)[:24]
         return {}
+
+class LogisticsView(generic.CreateView):
+    template_name = "logistics.html"
+    form_class = UserModelForm
+
+    def get_success_url(self):
+        return reverse("payment_success.html")
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+        
