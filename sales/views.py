@@ -50,15 +50,28 @@ def load_cart_items(request):
             "item": model_to_dict(order_item.item)
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
-    
+
+class CategoryView(generic.TemplateView):
+    template_name = "category.html"  # Use navbar.html as the template
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = Item.objects.values_list('category_tree', flat=True).distinct()[:10]
+        context['categories'] = categories
+        return context
+
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
-
 
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+class ItemDetailView(generic.DetailView):
+    model = Item
+    template_name = 'item_detail.html'
+    context_object_name = 'item_detail'
 
 @csrf_exempt
 def stripe_config(request):
