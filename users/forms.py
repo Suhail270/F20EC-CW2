@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from .models import User
+from sales.models import Order
 
 User = get_user_model()
 
@@ -33,3 +34,11 @@ class CustomUserCreationForm(UserCreationForm):
 
 class SearchForm(forms.Form):
     query = forms.CharField(max_length=100)
+
+class LogsisticsForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = (
+            'address',
+        )
+

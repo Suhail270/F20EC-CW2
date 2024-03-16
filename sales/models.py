@@ -18,6 +18,7 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     ordered_date = models.DateTimeField(null=True)
     edited_date = models.DateTimeField(default=timezone.now)
+    address = models.CharField(max_length=500)
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

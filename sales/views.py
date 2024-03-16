@@ -60,6 +60,13 @@ class PaymentSuccessView(generic.TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
+class CategoryView(generic.ListView):
+    template_name = "category.html"
+    context_object_name = "categories"
+ 
+    def get_queryset(self):
+        return Item.objects.values_list('category_tree', flat=True).distinct()[:10]
+
 @csrf_exempt
 def stripe_config(request):
     if request.method == 'GET':
