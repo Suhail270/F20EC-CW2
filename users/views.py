@@ -6,7 +6,7 @@ import csv
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
-from sales.models import Item
+from sales.models import Item, Cart
 # Create your views here.
 
 class LandingPageView(generic.ListView):
@@ -23,6 +23,11 @@ class SignupView(generic.CreateView):
 
     def get_success_url(self):
         return reverse("login")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        Cart.objects.create(user=self.object)
+        return response
 
 class ServicesView(generic.TemplateView):
     template_name = "services.html"
