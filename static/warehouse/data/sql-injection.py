@@ -10,10 +10,8 @@ connection = mysql.connector.connect(
     collation='utf8mb4_unicode_ci'
 )
 
-total_count = 37606
-count = 0
-
 prod_id = 0
+
 
 with open('flipkart-prod.csv', newline='', encoding='utf-8') as file:
     reader = csv.DictReader(file)
@@ -23,29 +21,30 @@ with open('flipkart-prod.csv', newline='', encoding='utf-8') as file:
         prod_id += 1
         name = row['product_name']
         description = row['description']
-        category_tree = row['product_category_tree']
+        category_name = row['product_category_tree']  # Assuming this field contains category names
         image = row['image']
         retail_price = row['retail_price']
         brand = row['brand']
 
         try:
-            query = "INSERT INTO sales_item (id, name, category_tree, retail_price, image, description, brand) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(query, (prod_id, name, category_tree, retail_price, image, description, brand))
+            # Check if category exists or create a new one
+            cursor.execute("SELECT id FROM sales_category WHERE name = %s", (category_name,))
+            category_row = cursor.fetchone()
+            if category_row:
+                category_id = category_row[0]
+            else:
+                cursor.execute("INSERT INTO sales_category (name) VALUES (%s)", (category_name,))
+                category_id = cursor.lastrowid
 
-        except mysql.connector.Error as err:
-            print("Error:", err)
-            continue
-        
-        if count % 500 == 0:
-            print("\nCOMMIT MADE.\n")
+            # Insert item
+            cursor.execute("INSERT INTO sales_item (id, name, category_id, retail_price, image, description, brand) VALUES (%s, %s, %s, %s, %s, %s, %s)", (prod_id, name, category_id, retail_price, image, description, brand))
             connection.commit()
+            
+            if prod_id % 100 == 0:
+                print(f"Inserted item with name: {name}")
+        except Exception as e:
+            print(f"Error inserting item with name: {name}. Error: {e}")
 
-        count += 1
-        total_count -= 1
-
-        print(f"Inserted {count} of 37606. Remaining: {total_count}\n\n")
-
-    connection.commit()
     cursor.close()
 
 connection.close()
