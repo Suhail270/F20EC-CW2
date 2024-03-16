@@ -90,10 +90,10 @@ WSGI_APPLICATION = "ecom.wsgi.application"
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.mysql',
+
         'ENGINE': 'mysql.connector.django',
-        'NAME': 'ppn2000',  
-        'USER': 'ppn2000',
+        'NAME': 'mm2107',  
+        'USER': 'mm2107',
         'PASSWORD': 'wnd2VKSANY5',
         'HOST': '132.145.18.222',
         'PORT': '',
