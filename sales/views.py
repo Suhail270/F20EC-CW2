@@ -44,7 +44,6 @@ def load_cart_items(request):
             "quantity": cart_item.quantity,
             "item": model_to_dict(cart_item.item)
         })
-    print(data)
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
     
 class PaymentView(generic.TemplateView):
