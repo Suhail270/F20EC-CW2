@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from sales.views import (CartListView,add_to_cart,load_cart_items,load_wishlist,CategoryView)
+
 from users.views import (LandingPageView, 
                          SignupView, 
                          ServicesView, 
@@ -61,8 +62,10 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('password-reset-complete/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('login/', LoginView.as_view(), name='login'),
+    path('category/', CategoryView.as_view(), name='categories'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('category/', CategoryView.as_view(), name='category'),
     path('logistics/', LogisticsView.as_view(), name='logistics'),
+    path('item/<int:pk>/', ItemDetailView.as_view(), name='item_detail'),
     path('', include('sales.urls')), # new
 ]
