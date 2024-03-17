@@ -3,11 +3,20 @@
 
 {% block content %}
 
-<div id="temp" dataUrl="{% url 'ajax_load_cart_list'%}"></div>
+<div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
 
 <section class="text-gray-600 body-font overflow-hidden">
+
+  <p>cart</p>
+
   <div id="item_list" class="container px-5 py-24 mx-auto">
     {% comment %} cart_list.html {% endcomment %}
+  </div>
+
+  <p>wishlist</p>
+
+  <div id="wishlist" class="container px-5 py-24 mx-auto">
+    {% comment %} wishlist_contents.html {% endcomment %}
   </div>
 
     <div class="flex justify-center">
@@ -20,7 +29,7 @@
 
 <script>
   function get_list() {
-    var url = $("#temp").attr("dataUrl");
+    var url = $("#urls").attr("cartUrl");
     // var fieldId = $(this).find("option:selected").text();
     // var period = document.getElementById('selectPeriod').value
     // var agent = document.getElementById('selectAgent').value
@@ -28,12 +37,27 @@
       url: url,
       data: {},
       success: function (data) {
-        console.log(data)
         $("#item_list").html(data.h);
+        console.log('here');
+      }
+    });
+  }
+  function get_wishlist() {
+    var url = $("#urls").attr("wishlistUrl");
+    // var fieldId = $(this).find("option:selected").text();
+    // var period = document.getElementById('selectPeriod').value
+    // var agent = document.getElementById('selectAgent').value
+    $.ajax({
+      url: url,
+      data: {},
+      success: function (data) {
+        $("#wishlist").html(data.h);
+        console.log('here');
       }
     });
   }
   get_list();
+  get_wishlist();
 </script>
 
 {% endblock content %}
