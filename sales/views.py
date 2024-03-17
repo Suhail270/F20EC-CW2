@@ -31,7 +31,7 @@ def load_wishlist(request):
             "quantity": wishlist_item.quantity,
             "item": model_to_dict(wishlist_item.item)
         })
-    return JsonResponse({"wishlist_items": data})
+    return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
 def load_cart_items(request):
     user = request.user
@@ -44,7 +44,7 @@ def load_cart_items(request):
             "quantity": cart_item.quantity,
             "item": model_to_dict(cart_item.item)
         })
-    return JsonResponse({"cart_items": data})
+    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
     
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
