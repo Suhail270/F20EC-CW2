@@ -28,7 +28,8 @@ from users.views import (LandingPageView,
                          TrialSuccessView,
                          ItemListView,
                          SearchView,
-                         LogisticsView)
+                         LogisticsView
+                         )
 from django.contrib.auth.views import (
     LoginView, 
     LogoutView, 
@@ -37,6 +38,7 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
     PasswordResetCompleteView
 )
+from sales.views import (ItemDetailView)
 import sales.views
 # from sales.templates.sales.fonts import helvetiker.typeface.json
 
