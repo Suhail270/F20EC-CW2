@@ -1,7 +1,7 @@
 <div> {% for category in categories %} {{ category }} {% endfor %} </div>
 <div class="categories-container" style="margin-top: 20px;"> <!-- Added margin-top -->
     {% for category in categories %}
-      <div class="category">{{ category }}</div> <!-- Category name -->
+      <div class="category">{{ category.name }}</div> <!-- Category name -->
     {% endfor %}
   </div>
   
