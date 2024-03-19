@@ -1,1 +1,26 @@
 <div> {% for category in categories %} {{ category }} {% endfor %} </div>
+<div class="categories-container" style="margin-top: 20px;"> <!-- Added margin-top -->
+    {% for category in categories %}
+      <div class="category">{{ category }}</div> <!-- Category name -->
+    {% endfor %}
+  </div>
+  
+  <style>
+    /* Style for categories */
+    .categories-container {
+      background-color: #d1d5db; /* Darker grey background color */
+      padding: 10px; /* Add padding */
+      display: flex; /* Display categories inline */
+      justify-content: space-between; /* Space out the categories equally */
+    }
+  
+    .category {
+      margin-right: 10px; /* Add margin between categories */
+      color: black; /* Set text color to black */
+      transition: color 0.3s; /* Smooth transition effect */
+    }
+  
+    .category:hover {
+      color: #154c79; /* Change text color on hover */
+    }
+  </style>  
