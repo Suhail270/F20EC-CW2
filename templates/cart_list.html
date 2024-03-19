@@ -85,7 +85,7 @@
     <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
     <td >{{ cart_item.item.name }}</td>
     <td>{{cart_item.item.category.name}}</td>
-    <td style="align-items: self-start;">
+    <td style="align-items: self-start;" class="inline">
       <button class="quantity-btn" onclick="decrease_quantity()" >-</button>
       <input type="number" class="quantity-input" value="{{cart_item.quantity}}">
       <button class="quantity-btn" onclick="increase_quantity()" >+</button>
