@@ -4,6 +4,16 @@
 {% block content %}
 
 <section class="text-gray-600 body-font">
+
+  <form id="sort-form" action="{% url 'products-list' %}" method="get">
+    <input id="query-input" type="text" name="query" hidden/>
+    <label for="sort_by">Sort by:</label>
+    <select name="sort_by" id="sort_by">
+      <option value="descending">Price (descending)</option>
+      <option value="ascending">Price (ascending)</option>
+    </select>
+  </form>
+
   <div class="container px-5 py-24 mx-auto">
     <div class="flex flex-wrap -m-4">
       {%for prod in prods_list%}
@@ -26,6 +36,44 @@
       {% endfor %}
     </div>
   </div>
+
+  {% comment %} Pagination code from the django docs {% endcomment %}
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+
 </section>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  const url = new URL(window.location.href);
+  const query = url.searchParams.get('query');
+  const current_sort = url.searchParams.get('sort_by');
+  if (current_sort == null) {
+    $('#sort_by').val("descending");
+  } else {
+    $('#sort_by').val(current_sort);
+  }
+  $('#query-input').value = query;
+  $('#sort_by').change(() => {
+    $('#sort-form').submit();
+  })
+
+</script>
 
 {% endblock content %}
