@@ -4,7 +4,8 @@
 {% block content %}
 
 <div class="max-w-lg mx-auto">
-    <form method="post" class="mt-5">
+    
+    <form method="post" class="mt-20">
         {% csrf_token %}
         {{ form|crispy }}
         <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md" style="background-color: #154c79;">
