@@ -1,48 +1,124 @@
-<header class="text-gray-700 body-font">
-  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-    {% if request.user.is_member %}
-      <a href="{% url 'visualization' %}" class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0 mr-4">
-        {% load static %} <a href="{% url 'landing-page' %}"><img class="w-90 h-20" src="{% static "warehouse/images/logo.jpg" %}" alt="Logo" /></a>
-      </a>
-    {% else %}
-      {% load static %} <a href="{% url 'landing-page' %}"><img class="w-90 h-20 mb-4 md:mb-0 mr-4" src="{% static "warehouse/images/logo.jpg" %}" alt="Logo" /></a>
-    {% endif %}
+        .navbar {
+            background-color: #154c79; /* Blue background color */
+            width: 100%; /* Cover the entire width of the screen */
+            padding: 4px 0; /* Add some padding */
+            position: fixed; /* Fix the navbar position */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
+            z-index: 1000; /* Ensure the navbar appears above other content */
+        }
 
-    <!-- Search bar -->
-    <form action="{% url 'products-list' %}" method="get" class="flex items-center flex-grow mb-4 md:mb-0 mr-4">
-      <input type="text" name="query" placeholder="Search" class="flex-grow px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500" />
-      <button type="submit" class="ml-2 bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600">
-        Search
-      </button>
-    </form>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px; /* Add padding to center the content */
+        }
 
-    <button type="submit" class="ml-2 bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600 mr-4">
-        <a href="{% url 'cart' %}">Cart</a>
-    </button>
-    
-    <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center mb-4 md:mb-0">
-    
-      {% if not request.user.is_authenticated %}
-        <a href="{% url 'signup' %}" class="mr-5 hover:text-gray-900">Signup</a>
-      {% endif %}
-    </nav>
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
 
-    {% if request.user.is_authenticated %}
-      Logged in as: {{request.user.username}}
-      <a href="{% url 'logout' %}" class="ml-3 inline-flex items-center bg-gray-200 border-0 py-1 px-3 focus:outline-none hover:bg-gray-300 rounded text-base md:mt-0">
-        Logout
-        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-      </a>
-    {% else %}
-      <a href="{% url 'login' %}" class="inline-flex items-center bg-gray-200 border-0 py-1 px-3 focus:outline-none hover:bg-gray-300 rounded text-base md:mt-0">
-        Login
-        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-      </a>
-    {% endif %}
-  </div>
-</header>
+        .navbar a:hover {
+            color: #d1d5db; /* Change color on hover */
+        }
+
+        /* Style for cart icon */
+        .navbar .cart-icon {
+            cursor: pointer;
+        }
+
+        /* Style for logout link */
+        .navbar .logout-link {
+            color: black; /* Black text color */
+        }
+
+        /* Style for logged in text */
+        .logged-in {
+            color: white; /* White text color */
+            margin-right: 10px; /* Add some margin to separate from the logout link */
+        }
+
+        /* Style for categories */
+        .categories-container {
+            background-color: #f3f4f6; /* Grey background color */
+            padding: 10px; /* Add padding */
+            display: flex; /* Display categories inline */
+        }
+
+        .category {
+            margin-right: 10px; /* Add margin between categories */
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="container">
+        {% if request.user.is_member %}
+            <a href="{% url 'visualization' %}" class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0 mr-4">
+                <a href="{% url 'landing-page' %}"><img class="w-90 h-20" src="{% static 'warehouse/images/logo_wattmart-nobg.png' %}" alt="Logo" /></a>
+            </a>
+        {% else %}
+            <a href="{% url 'landing-page' %}"><img class="w-90 h-20 mb-4 md:mb-0 mr-4" src="{% static "warehouse/images/logo_wattmart-nobg.png" %}" alt="Logo" /></a>
+        {% endif %}
+
+        <!-- Search bar -->
+        <form action="{% url 'products-list' %}" method="get" class="flex items-center flex-grow mb-4 md:mb-0 mr-4">
+          <input type="text" name="query" placeholder="Search" class="flex-grow px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500" />
+          <button type="submit" class="ml-2 bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600" style="background-color: #ffffff; color: black;">
+              Search
+          </button>
+        </form>
+
+        <!-- Cart icon -->
+        <a href="{% url 'cart' %}" class="ml-2">
+            <img src="{% static 'warehouse/images/cart-nobg.png' %}" alt="Cart" class="cart-icon" width="30" height="30">
+        </a>
+        
+        <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center mb-4 md:mb-0">
+        
+            {% if not request.user.is_authenticated %}
+                <a href="{% url 'signup' %}" class="mr-5 hover:text-gray-900">Signup</a>
+            {% endif %}
+        </nav>
+
+        {% if request.user.is_authenticated %}
+            <span class="logged-in">Logged in as: {{ request.user.username }}</span> <!-- Updated color to white -->
+            <a href="{% url 'logout' %}" class="inline-flex items-center bg-gray-200 border-0 py-1 px-3 focus:outline-none hover:bg-gray-300 rounded text-base md:mt-0 logout-link">
+                Logout
+                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="inline-flex items-center bg-gray-200 border-0 py-1 px-3 focus:outline-none hover:bg-gray-300 rounded text-base md:mt-0">
+                Login
+                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        {% endif %}
+    </div>
+</div>
+</div>
+</body>
+</html>

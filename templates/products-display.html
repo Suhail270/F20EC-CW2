@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<section class="text-gray-600 body-font">
+<section class="text-gray-600 body-font mt-32">
 
   <form id="sort-form" action="{% url 'products-list' %}" method="get">
     <input id="query-input" type="text" name="query" hidden/>
@@ -16,21 +16,23 @@
 
   <div class="container px-5 py-24 mx-auto">
     <div class="flex flex-wrap -m-4">
-      {%for prod in prods_list%}
-      <div class="lg:w-1/4 md:w-1/2 p-4 w-full">
-        <a class="block relative h-48 rounded overflow-hidden">
+      {% for prod in prods_list %}
+      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 40px;"> <!-- Increased margin-bottom -->
+        <a href="{% url 'item_detail' pk=prod.id %}" class="block relative h-56 rounded overflow-hidden"> <!-- Reduced height of image container -->
           <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{prod.image}}">
-        </a>
-        <div class="mt-4">
-          <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{prod.category_tree}}</h3>
-          <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
-          <div class = "flex justify-between">
+        </a>      
+        <div class="mt-4 flex flex-col justify-between h-full"> <!-- Added flex and height -->
+          <div>
+            <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{prod.category_tree}}</h3>
+            <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
             <p class="mt-1">{{prod.retail_price}}</p>
+          </div>
+          <div class="text-right mt-4"> <!-- Added text-right class and adjusted margin -->
             <form action="{% url 'add_to_cart' id=prod.id %}" method="post">
               {% csrf_token %}
-            <button type="submit" class="flex ml-4 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">Add to Cart</button>
-          </form>
-            </div>
+              <button type="submit" class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded" style="background-color: #154c79;">Add to Cart</button>
+            </form>
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -57,6 +59,14 @@
   </div>
 
 </section>
+
+<style>
+  .product-container {
+    border: 1px solid #d1d5db; /* Grey border */
+    display: flex; /* Added */
+    flex-direction: column; /* Added */
+  }
+</style>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 

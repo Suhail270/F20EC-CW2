@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="text-gray-600 body-font mt-32">
+  <!-- Include navbar -->
+  {% include 'navbar.html' %}
+
+  <!-- Item details -->
+  <div class="container px-5 py-24 mx-auto">
+    <div class="flex flex-wrap -m-4">
+      <div class="lg:w-1/2 md:w-1/2 p-4 w-full">
+        <div class="image-container">
+          <img src="{{ object.image }}" alt="{{ object.name }}">
+        </div>
+      </div>
+      <div class="lg:w-1/2 md:w-1/2 p-4 w-full">
+        <div class="details-container">
+          <h1>{{ object.name }}</h1>
+          <p><strong>Category:</strong> {{ object.category_tree }}</p>
+          <p><strong>Retail Price:</strong> ${{ object.retail_price }}</p>
+          <p><strong>Description:</strong> {{ object.description }}</p>
+          <!-- Add border and lines -->
+          <style>
+            .details-container {
+              border: 2px solid rgb(138, 138, 138);
+              padding: 20px;
+            }
+            .details-container p:not(:last-child) {
+              border-bottom: 1px solid rgb(138, 138, 138);
+              padding-bottom: 10px;
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

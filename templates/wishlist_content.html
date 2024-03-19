@@ -1,22 +1,89 @@
-{% for wishlist_item in wishlist_items %}
-  <div class="-my-8 divide-y-2 divide-gray-100">
-    <div class="py-8 flex flex-wrap md:flex-nowrap">
-      <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
-        <span class="font-semibold title-font text-gray-700">CATEGORY</span>
-        <span class="mt-1 text-gray-500 text-sm">12 Jun 2019</span>
-      </div>
-      <div class="md:flex-grow">
-        <h2 class="text-2xl font-medium text-gray-900 title-font mb-2">{{ wishlist_item.item.name }}</h2>
-        <p class="leading-relaxed">Glossier echo park pug, church-key sartorial biodiesel vexillologist pop-up snackwave ramps cornhole. Marfa 3 wolf moon party messenger bag selfies, poke vaporware kombucha lumbersexual pork belly polaroid hoodie portland craft beer.</p>
-        <a class="text-blue-500 inline-flex items-center mt-4">Learn More
-          <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14"></path>
-            <path d="M12 5l7 7-7 7"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
-{% empty %}
-<p>empty wishlist</p>
-{% endfor %}
+<div class="-my-8 divide-y-2 divide-gray-100 ">
+  <style>
+    /* .table-container{
+      padding: 10px;
+      /* display: flex; */
+    /* width: 100%;
+    }
+    
+    .table-style {
+      flex: 1;
+    border-collapse: collapse;
+    text-align: center;
+    flex-direction: column;
+    width: 100%;
+    
+    
+    }
+    
+    tr {
+      
+      border-radius: 10px; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+      margin-bottom: 10px; 
+  }
+  .img {
+    padding: 10px;
+    align-self: center;
+  }
+  .quantity-btn {
+      padding: auto;
+        font-size: 16px;
+        width: 20px;
+        height: 20px;
+        background-color: gray;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        margin: auto;
+        text-align: center;
+        position: relative;
+    }
+    .quantity-btn:hover {
+        background-color: #0056b3;
+    } */ 
+  </style>
+  <div class="table-container">
+    {% if wishlist_items %}
+  <table class="table-style">
+    
+    <thead >
+      
+        <tr >
+            <th >Image</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+        </tr>
+        
+    </thead>
+    
+    <tbody >
+  {% for wishlist_item in wishlist_items %}
+  <tr >
+  <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{wishlist_item.item.image}}" ></td>
+  <td >{{ wishlist_item.item.name }}</td>
+  <td>{{wishlist_item.item.category.name}}</td>
+  <td style="align-items: self-start;">
+    <button class="quantity-btn" onclick="decrease_quantity()">-</button>
+    <input type="number" class="quantity-input" value="{{wishlist_item.quantity}}">
+    <button class="quantity-btn" onclick="increase_quantity()">+</button>
+    
+  </td>
+  <td>{{wishlist_item.item.retail_price}}</td>
+</tr>
+  
+  {% endfor %}
+  
+</tbody>
+</table>
+{%endif%}
+
+{% if not wishlist_items %}
+<p style="padding: 10px;">No items in wishlist!</p>
+{%endif%}
+</div>
+
+
