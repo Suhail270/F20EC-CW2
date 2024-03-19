@@ -42,7 +42,8 @@ def load_cart_items(request):
         data.append({
             "id": cart_item.id,
             "quantity": cart_item.quantity,
-            "item": model_to_dict(cart_item.item)
+            "item": model_to_dict(cart_item.item),
+            "category": cart_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
 
@@ -127,7 +128,7 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, id):
 
