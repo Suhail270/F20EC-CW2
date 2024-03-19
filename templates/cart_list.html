@@ -1,107 +1,113 @@
-
-
-  <div class="-my-8 divide-y-2 divide-gray-100 ">
-    <style>
-      .table-container{
-        padding: 10px;
-        /* display: flex; */
-      width: 100%;
+<div class="-my-8 divide-y-2 divide-gray-100">
+  <style>
+      .table-container {
+          padding: 10px;
+          width: 100%;
       }
+
       .table-style {
-        flex: 1;
-      border-collapse: collapse;
-      text-align: center;
-      flex-direction: column;
-      width: 100%;
-      align-items: center;
-      
-      
+          border-collapse: collapse;
+          text-align: center;
+          width: 100%;
       }
-      
-      tr {
-        border-radius: 10px; 
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-        margin-bottom: 10px; 
-    }
-    .img {
-      padding: 10px;
-      align-self: center;
-    }
-    .quantity-container {
-      padding: auto;
-        /* display: flex; */
-        justify-content: center;
-        align-items: center;
-        width: 40px;
-    }
-    
-    .quantity-input {
-      padding: auto;
-        width: 40px;
-        text-align: center;
-    }
-    .quantity-btn {
-      padding: auto;
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        background-color: gray;
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        margin: auto;
-        text-align: center;
-        position: relative;
-        align-items:center;
-        
-    }
-    .quantity-btn:hover {
-        background-color: #0056b3;
-    }
-    th, td {
-        border: 1px solid #dddddd;
-        padding: 8px;
-        text-align: center; /* Center align content in table cells */
-        
-    }
-    </style>
-    <div class="table-container">
-      {% if cart_items %}
-    <table class="table-style">
-      <thead >
-        
-          <tr >
-              <th >Image</th>
-              <th>Product Name</th>
-              <th>Category</th>
-              <th>Quantity</th>
-              <th>Unit Price</th>
-          </tr>
-          
-      </thead>
-      <tbody >
-    {% for cart_item in cart_items %}
-    <tr >
-    <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
-    <td >{{ cart_item.item.name }}</td>
-    <td style="align-items: self-start;" class="inline">
-    <td>{{cart_item.category}}</td>
-      <button class="quantity-btn" onclick="decrease_quantity()" >-</button>
-      <input type="number" class="quantity-input" value="{{cart_item.quantity}}">
-      <button class="quantity-btn" onclick="increase_quantity()" >+</button>
-      
-    </td>
-    <td>{{cart_item.item.retail_price}}</td>
-  </tr>
-    
-    {% endfor %}
-  </tbody>
-  </table>
-  {%endif%}
-  {% if not cart_items %}
-<p style="padding: 10px;">No items in cart!</p>
-{%endif%}
-  </div>
-  
 
+      tr {
+          border-radius: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          margin-bottom: 10px;
+      }
+
+      .img {
+          padding: 10px;
+          align-self: center;
+      }
+
+      .img img {
+          max-width: 200px; 
+          max-height: 150px; 
+          width: auto; 
+          height: auto; 
+          display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          margin-left: auto;
+          margin-right: auto;
+}
+
+      .quantity-container {
+        /* width: 110px; */
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+
+      .quantity-input {
+          width: 40px;
+          text-align: center;
+      }
+
+      .quantity-btn {
+          font-size: 16px;
+          width: 20px;
+          height: 20px;
+          background-color: gray;
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          /* margin: auto; */
+          /* text-align: center;
+          position: relative;
+          align-items: center; */
+      }
+
+      .quantity-btn:hover {
+          background-color: #0056b3;
+      }
+
+      th,
+      td {
+          border: 1px solid #dddddd;
+          padding: 8px;
+          text-align: center; /* Center align content in table cells */
+      }
+  </style>
+  <div class="table-container">
+      {% if cart_items %}
+      <table class="table-style">
+          <thead>
+              <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for cart_item in cart_items %}
+              <tr>
+                  <td class="img"><img alt="ecommerce" src="{{cart_item.item.image}}"></td>
+                  <td>{{ cart_item.item.name }}</td>
+                  <td>{{cart_item.category}}</td>
+                  <td class="quantity-container">
+                    <div>
+                      <button class="quantity-btn" onclick="decrease_quantity()">-</button>
+                      <input type="number" class="quantity-input" value="{{cart_item.quantity}}">
+                      <button class="quantity-btn" onclick="increase_quantity()">+</button>
+                    </div>
+                  </td>
+                  <td>{{cart_item.item.retail_price}}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      {% endif %}
+      {% if not cart_items %}
+      <p style="padding: 10px;">No items in cart!</p>
+      {% endif %}
+  </div>
+</div>
