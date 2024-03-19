@@ -46,27 +46,19 @@ class OurTeamView(generic.TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-class ItemListView(generic.TemplateView):
+class ItemListView(generic.ListView):
     template_name = "products-display.html"
     context_object_name = "prods_list"
-
-    # def get_queryset(self) :
-    #     queryset = Item.objects.all().values()
-    #     return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super(ItemListView, self).get_context_data(**kwargs)
-        user = self.request.user
-        
-        queryset = Item.objects.all().values()[:24]
-        context.update({
-                "prods_list": queryset
-            })
-        
-        return context  
-
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    paginate_by = 24
+    
+    def get_queryset(self):
+            sort_by = self.request.GET.get('sort_by')
+            if sort_by == None:
+                sort_by = "descending"
+            if sort_by == "ascending":
+                return Item.objects.all().order_by('retail_price')
+            if sort_by == "descending":
+                return Item.objects.all().order_by('-retail_price')
     
 class MembershipPlanView(generic.TemplateView):
     template_name = "plan.html"
@@ -89,15 +81,20 @@ class TrialSuccessView(generic.TemplateView):
         return super().dispatch(request, *args, **kwargs)
     
 class SearchView(generic.ListView):
+    paginate_by = 24
     template_name = 'products-display.html'
     context_object_name = 'prods_list'
     form_class = SearchForm
 
     def get_queryset(self):
         query = self.request.GET.get('query')
-        if query:
-            return Item.objects.filter(name__icontains=query)[:24]
-        return {}
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by == None:
+            sort_by = "descending"
+        if sort_by == "ascending":
+            return Item.objects.filter(name__icontains=query).order_by('retail_price')
+        if sort_by == "descending":
+            return Item.objects.filter(name__icontains=query).order_by('-retail_price')
 
 class LogisticsView(generic.CreateView):
     template_name = "logistics.html"
