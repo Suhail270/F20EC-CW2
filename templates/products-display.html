@@ -5,7 +5,7 @@
 
 <section class="text-gray-600 body-font mt-32">
 
-  <form id="sort-form" action="{% url 'products-list' %}" method="get">
+  <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
     <input id="query-input" type="text" name="query" hidden/>
     <label for="sort_by">Sort by:</label>
     <select name="sort_by" id="sort_by">
@@ -14,14 +14,14 @@
     </select>
   </form>
 
-  <div class="container px-5 py-24 mx-auto">
+  <div class="container px-5 py-24 mx-auto" style="padding-top: 20px;">
     <div class="flex flex-wrap -m-4">
       {% for prod in prods_list %}
-      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 40px;"> <!-- Increased margin-bottom -->
-        <a href="{% url 'item_detail' pk=prod.id %}" class="block relative h-56 rounded overflow-hidden"> <!-- Reduced height of image container -->
+      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px;"> <!-- Reduced margin-bottom -->
+        <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" style="height: 300px;"> <!-- Reduced height of image container -->
           <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{prod.image}}">
         </a>      
-        <div class="mt-4 flex flex-col justify-between h-full"> <!-- Added flex and height -->
+        <div class="mt-n4 flex flex-col justify-between h-full"> <!-- Adjusted margin-top to -4 -->
           <div>
             <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{prod.category_tree}}</h3>
             <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
@@ -29,6 +29,8 @@
           </div>
           <div class="text-right mt-4"> <!-- Added text-right class and adjusted margin -->
             <button onclick="add_to_cart('{% url 'add_to_cart' id=prod.id %}')" urltype="button" class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded" style="background-color: #154c79;">Add to Cart</button>
+          <div class="mt-0"> <!-- Adjusted margin-top to 0 -->
+              <button type="submit" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button> <!-- Wishlist button -->
           </div>
         </div>
       </div>

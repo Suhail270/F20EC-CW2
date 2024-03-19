@@ -4,12 +4,12 @@
 {% block content %}
 <style>body{
   padding-top: 10%;
-}
+  }
   </style>
   
 <div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
 
-<section class="text-gray-600 body-font overflow-hidden">
+<section class="text-gray-600 body-font overflow-hidden" style="padding-top: 10px;">
 
   <h1 style="padding: 10px;"><strong>Cart Items</strong> </h1>
   <div id="item_list" class="px-5 py-24 mx-auto">
@@ -22,8 +22,8 @@
     {% comment %} wishlist_contents.html {% endcomment %}
   </div>
 
-    <div class="flex justify-center">
-        <a href="{% url 'logistics' %}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full">Proceed to Payment</a>
+    <div class="flex justify-center" style="padding: 10px;">
+        <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded-full" style="background-color: #154c79;">Confirm Order</a>
     </div>
 
 </section>
