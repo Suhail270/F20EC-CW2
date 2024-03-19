@@ -127,7 +127,7 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, id):
 
