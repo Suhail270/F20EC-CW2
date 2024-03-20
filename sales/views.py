@@ -202,4 +202,11 @@ def move_to_cart(request, id):
     item = WishlistItem.objects.get(id=id).item
     remove_from_wishlist(request, id)
     add_to_cart(request, item.id)
-    return CartListView.as_view()(request)
+    return JsonResponse({})
+
+@csrf_exempt
+def move_to_wishlist(request, id):
+    item = CartItem.objects.get(id=id).item
+    remove_from_cart(request, id)
+    add_to_wishlist(request, item.id)
+    return JsonResponse({})

@@ -24,6 +24,17 @@
       }
     });
   }
+  function wmoveItem(url, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      success: function (data) {
+        row_id = "#wrow" + id;
+        $(row_id).remove();
+        get_list();
+      }
+    });
+  }
 </script>
 
 <div class="-my-8 divide-y-2 divide-gray-100 ">
@@ -59,8 +70,8 @@
   </td>
   <td>{{wishlist_item.item.retail_price}}</td>
   <td><button class="delete-icon" onclick="wremoveItem('{% url 'remove_from_wishlist' id=wishlist_item.id %}', {{wishlist_item.id}})">Delete</button></td>
-  <td><button class="move-item-icon" onclick="moveWishlist(cart_item.id)">Move to Cart</button></td>
-              
+  <td><button class="move-item-icon" onclick="wmoveItem('{% url 'move_to_cart' id=wishlist_item.id %}', {{wishlist_item.id}})">Move to Cart</button></td>
+
 </tr>
   
   {% endfor %}
