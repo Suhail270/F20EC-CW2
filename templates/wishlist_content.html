@@ -12,6 +12,8 @@
             <th>Category</th>
             <th>Quantity</th>
             <th>Unit Price</th>
+            <th>Delete</th>
+            <th>Actions</th>
         </tr>
         
     </thead>
@@ -29,6 +31,9 @@
     
   </td>
   <td>{{wishlist_item.item.retail_price}}</td>
+  <td><button class="delete-icon" onclick="removeWishlist(cart_item.id)">Delete</button></td>
+  <td><button class="move-item-icon" onclick="moveWishlist(cart_item.id)">Move to Cart</button></td>
+              
 </tr>
   
   {% endfor %}

@@ -35,7 +35,7 @@
 }
 
       .quantity-container {
-        /* width: 110px; */
+        width: 110px;
         align-items: center;
         justify-content: center;
         height: 100%;
@@ -58,10 +58,7 @@
           border: none;
           border-radius: 50%;
           cursor: pointer;
-          /* margin: auto; */
-          /* text-align: center;
-          position: relative;
-          align-items: center; */
+          
       }
 
       .quantity-btn:hover {
@@ -74,6 +71,13 @@
           padding: 8px;
           text-align: center; /* Center align content in table cells */
       }
+      .delete-icon {
+        color: red;
+        cursor: pointer;
+    }
+    .move-item-icon{
+        cursor: pointer;
+    }
   </style>
   <div class="table-container">
       {% if cart_items %}
@@ -85,6 +89,8 @@
                   <th>Category</th>
                   <th>Quantity</th>
                   <th>Unit Price</th>
+                  <th>Delete</th>
+                  <th>Actions</th>
               </tr>
           </thead>
           <tbody>
@@ -101,6 +107,8 @@
                     </div>
                   </td>
                   <td>{{cart_item.item.retail_price}}</td>
+                  <td><button class="delete-icon" onclick="removeItem(cart_item.id)">Delete</button></td>
+                  <td><button class="move-item-icon" onclick="moveItem(cart_item.id)">Move to Wishlist</button></td>
               </tr>
               {% endfor %}
           </tbody>
