@@ -9,7 +9,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem
+from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
@@ -48,14 +48,14 @@ def load_cart_items(request):
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
 
-class CategoryView(generic.TemplateView):
-    template_name = "category.html"  # Use navbar.html as the template
+# class CategoryView(generic.TemplateView):
+#     template_name = "category.html"  # Use navbar.html as the template
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        categories = Item.objects.values_list('category_tree', flat=True).distinct()[:10]
-        context['categories'] = categories
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         categories = Item.objects.values_list('category_tree', flat=True).distinct()[:10]
+#         context['categories'] = categories
+#         return context
 
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
@@ -68,10 +68,18 @@ class PaymentSuccessView(generic.TemplateView):
 
 class CategoryView(generic.ListView):
     template_name = "category.html"
-    context_object_name = "categories"
+    context_object_name = "category"
  
     def get_queryset(self):
-        return Item.objects.values_list('category', flat=True).distinct()[:10]
+        print (Category.objects.all()[:10])
+        return Category.objects.all()[:10]
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
 class ItemDetailView(generic.DetailView):
     model = Item
     template_name = 'item_detail.html'
