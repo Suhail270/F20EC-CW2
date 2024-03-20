@@ -1,7 +1,7 @@
-<div> {% for category in categories %} {{ category }} {% endfor %} </div>
-<div class="categories-container" style="margin-top: 20px;"> <!-- Added margin-top -->
+<div class="categories-container" style="margin-top: 90px;"> <!-- Added margin-top -->
+    <p> heloooo worldd </p>
     {% for category in categories %}
-      <div class="category">{{ category.name }}</div> <!-- Category name -->
+      <div class="category">{{ category }}</div> <!-- Category name -->
     {% endfor %}
   </div>
   
@@ -12,6 +12,7 @@
       padding: 10px; /* Add padding */
       display: flex; /* Display categories inline */
       justify-content: space-between; /* Space out the categories equally */
+      height: auto;
     }
   
     .category {
