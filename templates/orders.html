@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>body{
+  padding-top: 10%;
+  }
+  .table-container{
+        padding: 10px;
+        
+      width: 100%;
+      margin-bottom: 50px;
+      }
+
+      .table-style {
+          border-collapse: collapse;
+          text-align: center;
+          width: 100%;
+      }
+
+      tr {
+          border-radius: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          margin-bottom: 10px;
+      }
+      th,
+      td {
+          
+          padding: 8px;
+          text-align: center; 
+      }
+  </style>
+  
+
+<section class="text-gray-600 body-font overflow-hidden" >
+
+  <h1 style="padding: 10px; font-size: xx-large;"><strong><center>My Orders</center></strong> </h1>
+    <div id="orders_list" class="table-container">
+        {%for order in orders%}
+        <div class="table-container">
+            <div><strong>Ordered Date: {{order.ordered_date}}</strong><br><strong>Total Amount: {{order.total_amount}}</strong></div>
+        
+            <table class="table-style">
+                <colgroup>
+                    <col style="width: 75%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                </tr>  
+                </thead>
+                <tbody>
+                    {%for orItem in orders_items%}
+                    {%if orItem.order  ==  order%}
+                        <tr>
+                            <td>{{orItem.item}}</td>
+                            <td>{{orItem.quantity}}</td>
+                        </tr>  
+                    {%endif%}  
+                    {%endfor%}
+                </tbody>
+            </table>
+        
+        </div>
+        {%endfor%}
+    </div>
+
+  
+    
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  
+  
+ 
+</script>
+
+{% endblock content %}
