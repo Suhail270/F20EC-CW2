@@ -42,7 +42,8 @@ def load_cart_items(request):
         data.append({
             "id": cart_item.id,
             "quantity": cart_item.quantity,
-            "item": model_to_dict(cart_item.item)
+            "item": model_to_dict(cart_item.item),
+            "category": cart_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
 
@@ -127,7 +128,7 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, id):
 
@@ -160,6 +161,7 @@ def remove_from_wishlist(request, id):
     WishlistItem.objects.filter(id=id).delete()
     return JsonResponse({'message': 'Item deleted from wishlist'})
 
+@csrf_exempt
 @login_required
 def add_to_wishlist(request, id):
     user = request.user
@@ -176,3 +178,23 @@ def add_to_wishlist(request, id):
         wishlist_item.save()
 
     return JsonResponse({'message': 'Item added to wishlist successfully'})
+
+@csrf_exempt
+def change_quantity(request, id):
+    diff = int(request.POST.get("diff"))
+    list_type = request.POST.get("list_type")
+    if list_type == "cart":
+        model = CartItem
+    elif list_type == "wishlist":
+        model = WishlistItem
+    list_item = model.objects.get(id=id)
+    list_item.quantity += diff
+    list_item.save()
+    return JsonResponse({"quantity": list_item.quantity})
+
+@csrf_exempt
+def move_to_cart(request, id):
+    item = WishlistItem.objects.get(id=id).item
+    remove_from_wishlist(request, id)
+    add_to_cart(request, item.id)
+    return CartListView.as_view()(request)
