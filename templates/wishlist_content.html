@@ -17,51 +17,7 @@
 </script>
 
 <div class="-my-8 divide-y-2 divide-gray-100 ">
-  <style>
-    /* .table-container{
-      padding: 10px;
-      /* display: flex; */
-    /* width: 100%;
-    }
-    
-    .table-style {
-      flex: 1;
-    border-collapse: collapse;
-    text-align: center;
-    flex-direction: column;
-    width: 100%;
-    
-    
-    }
-    
-    tr {
-      
-      border-radius: 10px; 
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-      margin-bottom: 10px; 
-  }
-  .img {
-    padding: 10px;
-    align-self: center;
-  }
-  .quantity-btn {
-      padding: auto;
-        font-size: 16px;
-        width: 20px;
-        height: 20px;
-        background-color: gray;
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        margin: auto;
-        text-align: center;
-        position: relative;
-    }
-    .quantity-btn:hover {
-        background-color: #0056b3;
-    } */ 
-  </style>
+  
   <div class="table-container">
     {% if wishlist_items %}
   <table class="table-style">
@@ -74,6 +30,8 @@
             <th>Category</th>
             <th>Quantity</th>
             <th>Unit Price</th>
+            <th>Delete</th>
+            <th>Actions</th>
         </tr>
         
     </thead>
@@ -81,15 +39,18 @@
     <tbody >
   {% for wishlist_item in wishlist_items %}
   <tr >
-  <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{wishlist_item.item.image}}" ></td>
+  <td class="img"><img alt="ecommerce" src="{{wishlist_item.item.image}}" ></td>
   <td >{{ wishlist_item.item.name }}</td>
-  <td>{{wishlist_item.item.category.name}}</td>
-  <td style="align-items: self-start;">
+  <td>{{wishlist_item.category}}</td>
+  <td class="quantity-container">
     <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', -1, {{wishlist_item.id}});" >-</button>
     <input id="wquantity{{wishlist_item.id}}" type="number" class="quantity-input" value="{{wishlist_item.quantity}}">
     <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', 1, {{wishlist_item.id}});" >+</button>
   </td>
   <td>{{wishlist_item.item.retail_price}}</td>
+  <td><button class="delete-icon" onclick="removeWishlist(cart_item.id)">Delete</button></td>
+  <td><button class="move-item-icon" onclick="moveWishlist(cart_item.id)">Move to Cart</button></td>
+              
 </tr>
   
   {% endfor %}
