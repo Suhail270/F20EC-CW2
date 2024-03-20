@@ -27,14 +27,9 @@
             <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
             <p class="mt-1">{{prod.retail_price}}</p>
           </div>
-          <div class="mt-0"> <!-- Adjusted margin-top to 0 -->
-            
-              <button type="submit" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button> <!-- Wishlist button -->
-            
-            <form action="{% url 'add_to_cart' id=prod.id %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded w-full" style="background-color: #154c79;">Add to Cart</button>
-            </form>
+          <div class="mt-0"> <!-- Added text-right class and adjusted margin -->
+            <button onclick="add_item('{% url 'add_to_wishlist' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button> <!-- Wishlist button -->
+            <button onclick="add_item('{% url 'add_to_cart' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -74,6 +69,15 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
+  function add_item(listUrl) {
+    $.ajax({
+      method: "POST",
+      url: listUrl,
+      success: function (data) {
+        window.alert(data.message);
+      }
+    });
+  }
   const url = new URL(window.location.href);
   const query = url.searchParams.get('query');
   const current_sort = url.searchParams.get('sort_by');

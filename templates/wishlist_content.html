@@ -1,3 +1,21 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  function wquantityFunc(url, diff, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        "diff": diff,
+        "list_type": "wishlist"
+      },
+      success: function (data) {
+        qid = "#wquantity" + id;
+        $(qid).val(data.quantity);
+      }
+    });
+  }
+</script>
+
 <div class="-my-8 divide-y-2 divide-gray-100 ">
   
   <div class="table-container">
@@ -25,10 +43,9 @@
   <td >{{ wishlist_item.item.name }}</td>
   <td>{{wishlist_item.category}}</td>
   <td class="quantity-container">
-    <button class="quantity-btn" onclick="decrease_quantity()">-</button>
-    <input type="number" class="quantity-input" value="{{wishlist_item.quantity}}">
-    <button class="quantity-btn" onclick="increase_quantity()">+</button>
-    
+    <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', -1, {{wishlist_item.id}});" >-</button>
+    <input id="wquantity{{wishlist_item.id}}" type="number" class="quantity-input" value="{{wishlist_item.quantity}}">
+    <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', 1, {{wishlist_item.id}});" >+</button>
   </td>
   <td>{{wishlist_item.item.retail_price}}</td>
   <td><button class="delete-icon" onclick="removeWishlist(cart_item.id)">Delete</button></td>
