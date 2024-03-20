@@ -1,5 +1,21 @@
-
-
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  function quantityFunc(url, diff, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        "diff": diff,
+        "list_type": "cart"
+      },
+      success: function (data) {
+        qid = "#quantity" + id;
+        $(qid).val(data.quantity);
+      }
+    });
+  }
+</script>
+  
   <div class="-my-8 divide-y-2 divide-gray-100 ">
     <style>
       .table-container{
@@ -84,12 +100,11 @@
     <tr >
     <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
     <td >{{ cart_item.item.name }}</td>
-    <td style="align-items: self-start;" class="inline">
     <td>{{cart_item.category}}</td>
-      <button class="quantity-btn" onclick="decrease_quantity()" >-</button>
-      <input type="number" class="quantity-input" value="{{cart_item.quantity}}">
-      <button class="quantity-btn" onclick="increase_quantity()" >+</button>
-      
+    <td style="align-items: self-start;" class="inline">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}});" >-</button>
+      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}});" >+</button>
     </td>
     <td>{{cart_item.item.retail_price}}</td>
   </tr>
@@ -102,5 +117,3 @@
 <p style="padding: 10px;">No items in cart!</p>
 {%endif%}
   </div>
-  
-
