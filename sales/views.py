@@ -131,6 +131,8 @@ def stripe_webhook(request):
 @csrf_exempt
 @login_required
 def add_to_cart(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
 
     item = get_object_or_404(Item, id=id)
     cart = Cart.objects.filter(user=request.user).first()
@@ -149,11 +151,12 @@ def add_to_cart(request, id):
         cart.total_amount += item.retail_price
         cart.save()
 
-    return JsonResponse({'message': 'Item added to cart successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to cart successfully'})
 
 
+@csrf_exempt
 def remove_from_cart(request, id):
-    OrderItem.objects.filter(id=id).delete()
+    CartItem.objects.filter(id=id).delete()
     return JsonResponse({'message': 'Item deleted from cart'})
 
 @csrf_exempt
@@ -162,8 +165,10 @@ def remove_from_wishlist(request, id):
     return JsonResponse({'message': 'Item deleted from wishlist'})
 
 @csrf_exempt
-@login_required
 def add_to_wishlist(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
+    
     user = request.user
     item = get_object_or_404(Item, id=id)
     wishlist, created = Wishlist.objects.get_or_create(user=user)
@@ -177,7 +182,7 @@ def add_to_wishlist(request, id):
         wishlist_item.quantity += 1
         wishlist_item.save()
 
-    return JsonResponse({'message': 'Item added to wishlist successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to wishlist successfully'})
 
 @csrf_exempt
 def change_quantity(request, id):

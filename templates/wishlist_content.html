@@ -14,6 +14,16 @@
       }
     });
   }
+  function wremoveItem(url, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      success: function (data) {
+        row_id = "#wrow" + id;
+        $(row_id).remove();
+      }
+    });
+  }
 </script>
 
 <div class="-my-8 divide-y-2 divide-gray-100 ">
@@ -38,7 +48,7 @@
     
     <tbody >
   {% for wishlist_item in wishlist_items %}
-  <tr >
+  <tr id="wrow{{wishlist_item.id}}">
   <td class="img"><img alt="ecommerce" src="{{wishlist_item.item.image}}" ></td>
   <td >{{ wishlist_item.item.name }}</td>
   <td>{{wishlist_item.category}}</td>
@@ -48,7 +58,7 @@
     <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', 1, {{wishlist_item.id}});" >+</button>
   </td>
   <td>{{wishlist_item.item.retail_price}}</td>
-  <td><button class="delete-icon" onclick="removeWishlist(cart_item.id)">Delete</button></td>
+  <td><button class="delete-icon" onclick="wremoveItem('{% url 'remove_from_wishlist' id=wishlist_item.id %}', {{wishlist_item.id}})">Delete</button></td>
   <td><button class="move-item-icon" onclick="moveWishlist(cart_item.id)">Move to Cart</button></td>
               
 </tr>

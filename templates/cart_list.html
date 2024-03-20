@@ -14,6 +14,16 @@
       }
     });
   }
+  function removeItem(url, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      success: function (data) {
+        row_id = "#row" + id;
+        $(row_id).remove();
+      }
+    });
+  }
 </script>
   
   <div class="-my-8 divide-y-2 divide-gray-100 ">
@@ -114,7 +124,7 @@
       </thead>
       <tbody >
     {% for cart_item in cart_items %}
-    <tr >
+    <tr id="row{{cart_item.id}}">
     <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
     <td >{{ cart_item.item.name }}</td>
     <td>{{cart_item.category}}</td>
@@ -124,7 +134,7 @@
       <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}});" >+</button>
     </td>
     <td>{{cart_item.item.retail_price}}</td>
-    <td><button class="delete-icon" onclick="removeItem(cart_item.id)">Delete</button></td>
+    <td><button class="delete-icon" onclick="removeItem('{% url 'remove_from_cart' id=cart_item.id %}', {{cart_item.id}})">Delete</button></td>
     <td><button class="move-item-icon" onclick="moveItem(cart_item.id)">Move to Wishlist</button></td>
   </tr>
     

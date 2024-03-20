@@ -74,7 +74,11 @@
       method: "POST",
       url: listUrl,
       success: function (data) {
-        window.alert(data.message);
+        if (!data.auth) {
+          window.location = "{% url 'login' %}";
+        } else {
+          window.alert(data.message);
+        }
       }
     });
   }
