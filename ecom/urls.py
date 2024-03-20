@@ -72,7 +72,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('category/', CategoryView.as_view(), name='categories'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('category/', CategoryView.as_view(), name='category'),
     path('logistics/', LogisticsView.as_view(), name='logistics'),
     path('item/<int:pk>/', ItemDetailView.as_view(), name='item_detail'),
     path('', include('sales.urls')), # new
