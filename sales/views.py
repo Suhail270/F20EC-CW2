@@ -191,3 +191,10 @@ def change_quantity(request, id):
     list_item.quantity += diff
     list_item.save()
     return JsonResponse({"quantity": list_item.quantity})
+
+@csrf_exempt
+def move_to_cart(request, id):
+    item = WishlistItem.objects.get(id=id).item
+    remove_from_wishlist(request, id)
+    add_to_cart(request, item.id)
+    return CartListView.as_view()(request)
