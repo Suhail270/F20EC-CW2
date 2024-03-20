@@ -6,7 +6,7 @@ import csv
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from .forms import CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
-from sales.models import Item, Cart
+from sales.models import Item, Cart, CartItem, OrderItem, Order
 # Create your views here.
 
 class LandingPageView(generic.ListView):
@@ -106,6 +106,12 @@ class LogisticsView(generic.CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         user = self.request.user
+        return form
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['address'] = self.request.user.address
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -114,6 +120,22 @@ class LogisticsView(generic.CreateView):
         return context
     
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.save()
+        order = form.save(commit=False)
+
+        user = self.request.user
+        cart = Cart.objects.get(user=user)
+
+        order.user  = self.request.user
+        order.total_amount = cart.total_amount
+        order.save()
+
+        # THIS CODE IS FOR LATER
+        # cart_items = CartItem.objects.filter(cart=cart)
+        # for cart_item in cart_items:
+        #     order_item = OrderItem()
+        #     order_item.order = order
+        #     order_item.quantity = cart_item.quantity
+        #     order_item.item = cart_item.item
+        #     order_item.save()
+            
         return super(LogisticsView,self).form_valid(form)
