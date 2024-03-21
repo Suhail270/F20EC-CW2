@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category
 import stripe
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.utils import timezone
 
 class CartListView(LoginRequiredMixin, generic.TemplateView):
@@ -60,6 +60,37 @@ def load_cart_items(request):
 
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
+
+# @login_required
+class CreateStripeCheckoutSessionView(View):
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    def post(self, request, *args, **kwargs):
+        cart = Cart.objects.filter(user=request.user).first()
+        price = cart.total_amount
+
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "gbp",
+                        "unit_amount": int(price),
+                        "product_data": {
+                            "name": "Secure transaction to WattMart™, Powered by Stripe",
+                            "description": "Order placed",
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url='http://127.0.0.1:8000/success/',
+            # cancel_url=,
+        )
+        return redirect(checkout_session.url)
+
 
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
