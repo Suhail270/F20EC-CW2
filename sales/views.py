@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from django.db.models.query import QuerySet
 from django.forms import model_to_dict
 from django.views import generic
@@ -8,10 +9,10 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem
+from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category, ModeOfPayment
 import stripe
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.utils import timezone
 
 class CartListView(LoginRequiredMixin, generic.TemplateView):
@@ -29,7 +30,8 @@ def load_wishlist(request):
         data.append({
             "id": wishlist_item.id,
             "quantity": wishlist_item.quantity,
-            "item": model_to_dict(wishlist_item.item)
+            "item": model_to_dict(wishlist_item.item),
+            "category": wishlist_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
@@ -42,25 +44,106 @@ def load_cart_items(request):
         data.append({
             "id": cart_item.id,
             "quantity": cart_item.quantity,
-            "item": model_to_dict(cart_item.item)
+            "item": model_to_dict(cart_item.item),
+            "category": cart_item.item.category,
+            
         })
-    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
     
+    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data,'cart_amt' : cart.total_amount})})
+
+# class CategoryView(generic.TemplateView):
+#     template_name = "category.html"  # Use navbar.html as the template
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         categories = Item.objects.values_list('category_tree', flat=True).distinct()[:10]
+#         context['categories'] = categories
+#         return context
+
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
+
+# @login_required
+class CreateStripeCheckoutSessionView(View):
+
+    stripe.api_key = 'sk_test_51Os180JDw3WYrLo5uSYV1Wgv6UfqWv1wiEoKMyVnYjOFjF3UcyaxMQE5Xya0qfmyGkhfx4GafZITxtP1VVw9G5Xt00C0OEUdxM'
+
+    def post(self, request, *args, **kwargs):
+        cart = Cart.objects.filter(user=request.user).first()
+        price = cart.total_amount
+
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "gbp",
+                        "unit_amount": int(price),
+                        "product_data": {
+                            "name": "Secure transaction to WattMart™, Powered by Stripe",
+                            "description": "Order placed",
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url='http://127.0.0.1:8000/payment_success/',
+            # cancel_url=,
+        )
+        
+        return redirect(checkout_session.url)
+
+
 
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
 
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+
+        response = super().dispatch(request, *args, **kwargs)
+
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if cart:
+            order = Order.objects.create(
+                user=self.request.user,
+                ordered_date=timezone.now(),
+                address=self.request.user.address,
+                mode_of_payment=ModeOfPayment.objects.get(name="Credit/Debit Card"),
+                total_amount=cart.total_amount
+            )
+
+            cart_items = cart.cartitem_set.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    item=cart_item.item,
+                    quantity=cart_item.quantity
+                )
+
+            cart.delete()
+
+        return response
+
 
 class CategoryView(generic.ListView):
     template_name = "category.html"
-    context_object_name = "categories"
+    context_object_name = "category"
  
     def get_queryset(self):
-        return Item.objects.values_list('category', flat=True).distinct()[:10]
+        print (Category.objects.all()[:10])
+        return Category.objects.all()[:10]
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
+class ItemDetailView(generic.DetailView):
+    model = Item
+    template_name = 'item_detail.html'
+    context_object_name = 'item_detail'
 
 @csrf_exempt
 def stripe_config(request):
@@ -75,7 +158,7 @@ def create_checkout_session(request):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                success_url=domain_url + 'payment_success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=domain_url + 'cancelled/',
                 payment_method_types=['card'],
                 mode='payment',
@@ -114,9 +197,11 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
 
     item = get_object_or_404(Item, id=id)
     cart = Cart.objects.filter(user=request.user).first()
@@ -135,11 +220,17 @@ def add_to_cart(request, id):
         cart.total_amount += item.retail_price
         cart.save()
 
-    return JsonResponse({'message': 'Item added to cart successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to cart successfully'})
 
 
+@csrf_exempt
 def remove_from_cart(request, id):
-    OrderItem.objects.filter(id=id).delete()
+    itm = CartItem.objects.filter(id=id).first()
+    amount = itm.quantity * itm.item.retail_price
+    CartItem.objects.filter(id=id).delete()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount -= amount
+    cart.save()
     return JsonResponse({'message': 'Item deleted from cart'})
 
 @csrf_exempt
@@ -147,8 +238,11 @@ def remove_from_wishlist(request, id):
     WishlistItem.objects.filter(id=id).delete()
     return JsonResponse({'message': 'Item deleted from wishlist'})
 
-@login_required
+@csrf_exempt
 def add_to_wishlist(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
+    
     user = request.user
     item = get_object_or_404(Item, id=id)
     wishlist, created = Wishlist.objects.get_or_create(user=user)
@@ -162,4 +256,51 @@ def add_to_wishlist(request, id):
         wishlist_item.quantity += 1
         wishlist_item.save()
 
-    return JsonResponse({'message': 'Item added to wishlist successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to wishlist successfully'})
+
+@csrf_exempt
+def change_quantity(request, id):
+    diff = int(request.POST.get("diff"))
+    list_type = request.POST.get("list_type")
+    alt = request.POST.get("alt")
+    if list_type == "cart":
+        model = CartItem
+    elif list_type == "wishlist":
+        model = WishlistItem
+    list_item = model.objects.get(id=id)
+    
+    amount = list_item.item.retail_price * diff
+    list_item.quantity += diff
+    list_item.save()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount += amount
+    cart.save()
+    return JsonResponse({"quantity": list_item.quantity})
+
+@csrf_exempt
+def move_to_cart(request, id):
+    item = WishlistItem.objects.get(id=id).item
+    remove_from_wishlist(request, id)
+    add_to_cart(request, item.id)
+    return JsonResponse({})
+
+@csrf_exempt
+def move_to_wishlist(request, id):
+    item = CartItem.objects.get(id=id).item
+    remove_from_cart(request, id)
+    add_to_wishlist(request, item.id)
+    return JsonResponse({})
+
+class OrdersView(LoginRequiredMixin, generic.ListView):
+    template_name = "orders.html"
+    # template_name = "category.html"  # Use navbar.html as the template
+    def get_queryset(self):
+        return Order.objects.filter(user= self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = Order.objects.filter(user= self.request.user)
+        orders_items = OrderItem.objects.filter(order__in=orders)       
+        
+        context['orders'] = orders
+        context['orders_items'] = orders_items
+        return context

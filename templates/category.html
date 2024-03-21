@@ -1,1 +1,34 @@
-<div> {% for category in categories %} {{ category }} {% endfor %} </div>
+<div class="categories-container" >
+    {% for category in categories %}
+      <form method="GET" action="{% url 'products-list-category' %}">
+        <button class="category" onclick=submit value="{{ category }}" name="CategoryQuery">{{ category }}</button>
+    </form>
+    {% endfor %}
+  </div>
+  
+  <style>
+    /* Style for categories */
+    .categories-container {
+      background-color: #a8c4ef; /* Darker grey background color */
+      padding: 3px 0; /* Add padding */
+      display: flex; /* Display categories inline */
+      justify-content: space-between; /* Space out the categories equally */
+      height: auto;
+      width: 100%;
+      position: fixed; /* Position the container */
+      top: 88px; /* Adjust the distance from the top */
+      left: 0; /* Align the container to the left */
+      width: 100%; /* Take up full width */
+      z-index: 999; /* Ensure it's above other elements */
+    }
+  
+    .category {
+      margin-right: 10px; /* Add margin between categories */
+      color: black; /* Set text color to black */
+      transition: color 0.3s; /* Smooth transition effect */
+    }
+  
+    .category:hover {
+      color: #154c79; /* Change text color on hover */
+    }
+  </style>  
