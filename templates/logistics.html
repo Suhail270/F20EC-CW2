@@ -2,16 +2,14 @@
 {% load tailwind_filters %}
 
 {% block content %}
-
 <div class="max-w-lg mx-auto mt-32">
-    <p >Enter Delivery Address and choose mode of payment.</p>
-    <form method="get" class="mt-5">
+    <p>Enter Delivery Address and choose mode of payment.</p>
+    <form method="post" action="{% url 'create-checkout-session' %}" class="mt-5">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type='submit' class="w-full text-white bg-blue-500 px-3 py-2 rounded-md" style="background-color: #154c79;">
-            Proceed To Payment.
+        <button type="submit" class="w-full text-white bg-blue-500 px-3 py-2 rounded-md" style="background-color: #154c79;">
+            Proceed To Payment
         </button>
     </form>
-    
 </div>
 {% endblock content %}
