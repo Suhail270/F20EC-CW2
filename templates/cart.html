@@ -29,31 +29,6 @@
 
 <div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
 
-<section class="text-gray-600 body-font overflow-hidden">
-
-  <p>cart</p>
-
-  <div id="item_list" class="container px-5 py-24 mx-auto">
-    {% comment %} cart_list.html {% endcomment %}
-  </div>
-
-  <p>wishlist</p>
-
-  <div id="wishlist" class="container px-5 py-24 mx-auto">
-    {% comment %} wishlist_contents.html {% endcomment %}
-  </div>
-
-    <div class="flex justify-center">
-        <form
-          action="{% url 'create-checkout-session' %}"
-          method="POST"
-        >
-          {% csrf_token %}
-          <button type="submit" class="btn btn-primary">Checkout</button>
-        </form>
-    </div>
-
-</section>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
