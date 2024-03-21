@@ -229,12 +229,16 @@ def add_to_wishlist(request, id):
 def change_quantity(request, id):
     diff = int(request.POST.get("diff"))
     list_type = request.POST.get("list_type")
+    alt = request.POST.get("alt")
     if list_type == "cart":
         model = CartItem
     elif list_type == "wishlist":
         model = WishlistItem
     list_item = model.objects.get(id=id)
-    list_item.quantity += diff
+    if alt:
+        list_item.quantity = diff
+    else:
+        list_item.quantity += diff
     list_item.save()
     return JsonResponse({"quantity": list_item.quantity})
 
