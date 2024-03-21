@@ -30,7 +30,8 @@ def load_wishlist(request):
         data.append({
             "id": wishlist_item.id,
             "quantity": wishlist_item.quantity,
-            "item": model_to_dict(wishlist_item.item)
+            "item": model_to_dict(wishlist_item.item),
+            "category": wishlist_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
