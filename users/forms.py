@@ -39,6 +39,9 @@ class CustomUserCreationForm(UserCreationForm):
 class SearchForm(forms.Form):
     query = forms.CharField(max_length=100)
 
+class CategoryForm(forms.Form):
+    CategoryQuery = forms.CharField(max_length=500)
+
 class LogsisticsForm(forms.ModelForm):
     class Meta:
         model = Order

@@ -1,18 +1,25 @@
-<div class="categories-container" style="margin-top: 90px;"> <!-- Added margin-top -->
-    <p> heloooo worldd </p>
+<div class="categories-container" >
     {% for category in categories %}
-      <div class="category">{{ category }}</div> <!-- Category name -->
+      <form method="GET" action="{% url 'products-list-category' %}">
+        <button class="category" onclick=submit value="{{ category }}" name="CategoryQuery">{{ category }}</button>
+    </form>
     {% endfor %}
   </div>
   
   <style>
     /* Style for categories */
     .categories-container {
-      background-color: #d1d5db; /* Darker grey background color */
-      padding: 10px; /* Add padding */
+      background-color: #a8c4ef; /* Darker grey background color */
+      padding: 3px 0; /* Add padding */
       display: flex; /* Display categories inline */
       justify-content: space-between; /* Space out the categories equally */
       height: auto;
+      width: 100%;
+      position: fixed; /* Position the container */
+      top: 88px; /* Adjust the distance from the top */
+      left: 0; /* Align the container to the left */
+      width: 100%; /* Take up full width */
+      z-index: 999; /* Ensure it's above other elements */
     }
   
     .category {

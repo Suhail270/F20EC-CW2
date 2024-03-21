@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from django.db.models.query import QuerySet
 from django.forms import model_to_dict
 from django.views import generic
@@ -11,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category
 import stripe
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.utils import timezone
 
 class CartListView(LoginRequiredMixin, generic.TemplateView):
@@ -29,7 +30,8 @@ def load_wishlist(request):
         data.append({
             "id": wishlist_item.id,
             "quantity": wishlist_item.quantity,
-            "item": model_to_dict(wishlist_item.item)
+            "item": model_to_dict(wishlist_item.item),
+            "category": wishlist_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
@@ -58,6 +60,37 @@ def load_cart_items(request):
 
 class PaymentView(generic.TemplateView):
     template_name = 'stripe.html'
+
+# @login_required
+class CreateStripeCheckoutSessionView(View):
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    def post(self, request, *args, **kwargs):
+        cart = Cart.objects.filter(user=request.user).first()
+        price = cart.total_amount
+
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "gbp",
+                        "unit_amount": int(price),
+                        "product_data": {
+                            "name": "Secure transaction to WattMart™, Powered by Stripe",
+                            "description": "Order placed",
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            success_url='http://127.0.0.1:8000/success/',
+            # cancel_url=,
+        )
+        return redirect(checkout_session.url)
+
 
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
@@ -218,3 +251,17 @@ def move_to_wishlist(request, id):
     remove_from_cart(request, id)
     add_to_wishlist(request, item.id)
     return JsonResponse({})
+
+class OrdersView(LoginRequiredMixin, generic.ListView):
+    template_name = "orders.html"
+    # template_name = "category.html"  # Use navbar.html as the template
+    def get_queryset(self):
+        return Order.objects.filter(user= self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = Order.objects.filter(user= self.request.user)
+        orders_items = OrderItem.objects.filter(order__in=orders)       
+        
+        context['orders'] = orders
+        context['orders_items'] = orders_items
+        return context
