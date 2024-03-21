@@ -45,9 +45,11 @@ def load_cart_items(request):
             "id": cart_item.id,
             "quantity": cart_item.quantity,
             "item": model_to_dict(cart_item.item),
-            "category": cart_item.item.category
+            "category": cart_item.item.category,
+            
         })
-    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
+    
+    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data,'cart_amt' : cart.total_amount})})
 
 # class CategoryView(generic.TemplateView):
 #     template_name = "category.html"  # Use navbar.html as the template
@@ -223,7 +225,12 @@ def add_to_cart(request, id):
 
 @csrf_exempt
 def remove_from_cart(request, id):
+    itm = CartItem.objects.filter(id=id).first()
+    amount = itm.quantity * itm.item.retail_price
     CartItem.objects.filter(id=id).delete()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount -= amount
+    cart.save()
     return JsonResponse({'message': 'Item deleted from cart'})
 
 @csrf_exempt
@@ -261,11 +268,13 @@ def change_quantity(request, id):
     elif list_type == "wishlist":
         model = WishlistItem
     list_item = model.objects.get(id=id)
-    if alt:
-        list_item.quantity = diff
-    else:
-        list_item.quantity += diff
+    
+    amount = list_item.item.retail_price * diff
+    list_item.quantity += diff
     list_item.save()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount += amount
+    cart.save()
     return JsonResponse({"quantity": list_item.quantity})
 
 @csrf_exempt
