@@ -1,5 +1,12 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
+  document.querySelector(".quantity-input").addEventListener("keypress", function (evt) {
+    if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
+    {        evt.preventDefault();
+    }
+});
+// 0 for null values// 8 for backspace // 48-57 for 0-9 numbers
+// has context menu
   function quantityFunc(url, diff, id) {
     $.ajax({
       url: url,
@@ -91,7 +98,8 @@
       .quantity-input {
           width: 40px;
           text-align: center;
-          margin: 4px 8px 4px 0;
+          margin: 4px 8px 4px 8px;
+          
           border: none;
           background: none;
           outline: none;
@@ -134,6 +142,10 @@
         border-radius: 4px;
         padding: 8px 16px;
         font-size: 16px;
+    }
+    input[type='number']::-webkit-inner-spin-button, 
+    input[type='number']::-webkit-outer-spin-button { 
+    -webkit-appearance: none;    margin: 0;
     }
   </style>
   <div class="table-container">
