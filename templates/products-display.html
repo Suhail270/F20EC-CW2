@@ -4,7 +4,7 @@
 {% block content %}
 
 <section class="text-gray-600 body-font mt-32">
-
+  {% include 'category.html' %}
   <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
     <input id="query-input" type="text" name="query" hidden/>
     <label for="sort_by">Sort by:</label>

@@ -5,8 +5,8 @@ import string
 import csv
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
-from .forms import CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
-from sales.models import Item, Cart, CartItem, OrderItem, Order
+from .forms import CategoryForm, CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
+from sales.models import Category, Item, Cart, CartItem, OrderItem, Order
 # Create your views here.
 
 class LandingPageView(generic.ListView):
@@ -60,6 +60,12 @@ class ItemListView(generic.ListView):
             if sort_by == "descending":
                 return Item.objects.all().order_by('-retail_price')
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
 class MembershipPlanView(generic.TemplateView):
     template_name = "plan.html"
     def dispatch(self, request, *args, **kwargs):
@@ -95,7 +101,39 @@ class SearchView(generic.ListView):
             return Item.objects.filter(name__icontains=query).order_by('retail_price')
         if sort_by == "descending":
             return Item.objects.filter(name__icontains=query).order_by('-retail_price')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
 
+class CategoryFilterView(generic.ListView):
+    paginate_by = 24
+    template_name = 'products-display.html'
+    context_object_name = 'prods_list'
+    form_class = CategoryForm
+
+    def get_queryset(self):
+        query = self.request.GET.get('CategoryQuery')
+        print("query is :", query)
+        categoryInstance = Category.objects.get(name=query)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by == None:
+            sort_by = "descending"
+        if sort_by == "ascending":
+            return Item.objects.filter(category=categoryInstance).order_by('retail_price')
+        if sort_by == "descending":
+            return Item.objects.filter(category=categoryInstance).order_by('-retail_price')
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
+      
 class LogisticsView(generic.CreateView):
     template_name = "logistics.html"
     form_class = LogsisticsForm
