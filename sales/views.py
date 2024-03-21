@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from django.db.models.query import QuerySet
 from django.forms import model_to_dict
 from django.views import generic
@@ -8,7 +9,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem
+from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView, View
@@ -29,7 +30,8 @@ def load_wishlist(request):
         data.append({
             "id": wishlist_item.id,
             "quantity": wishlist_item.quantity,
-            "item": model_to_dict(wishlist_item.item)
+            "item": model_to_dict(wishlist_item.item),
+            "category": wishlist_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
@@ -42,9 +44,22 @@ def load_cart_items(request):
         data.append({
             "id": cart_item.id,
             "quantity": cart_item.quantity,
-            "item": model_to_dict(cart_item.item)
+            "item": model_to_dict(cart_item.item),
+            "category": cart_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
+
+# class CategoryView(generic.TemplateView):
+#     template_name = "category.html"  # Use navbar.html as the template
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         categories = Item.objects.values_list('category_tree', flat=True).distinct()[:10]
+#         context['categories'] = categories
+#         return context
+
+class PaymentView(generic.TemplateView):
+    template_name = 'stripe.html'
 
 # @login_required
 class CreateStripeCheckoutSessionView(View):
@@ -76,6 +91,7 @@ class CreateStripeCheckoutSessionView(View):
         )
         return redirect(checkout_session.url)
 
+
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
 
@@ -84,10 +100,22 @@ class PaymentSuccessView(generic.TemplateView):
 
 class CategoryView(generic.ListView):
     template_name = "category.html"
-    context_object_name = "categories"
+    context_object_name = "category"
  
     def get_queryset(self):
-        return Item.objects.values_list('category', flat=True).distinct()[:10]
+        print (Category.objects.all()[:10])
+        return Category.objects.all()[:10]
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
+class ItemDetailView(generic.DetailView):
+    model = Item
+    template_name = 'item_detail.html'
+    context_object_name = 'item_detail'
 
 @csrf_exempt
 def stripe_config(request):
@@ -141,9 +169,11 @@ def stripe_webhook(request):
 
     return HttpResponse(status=200)
 
-
+@csrf_exempt
 @login_required
 def add_to_cart(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
 
     item = get_object_or_404(Item, id=id)
     cart = Cart.objects.filter(user=request.user).first()
@@ -162,11 +192,12 @@ def add_to_cart(request, id):
         cart.total_amount += item.retail_price
         cart.save()
 
-    return JsonResponse({'message': 'Item added to cart successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to cart successfully'})
 
 
+@csrf_exempt
 def remove_from_cart(request, id):
-    OrderItem.objects.filter(id=id).delete()
+    CartItem.objects.filter(id=id).delete()
     return JsonResponse({'message': 'Item deleted from cart'})
 
 @csrf_exempt
@@ -174,8 +205,11 @@ def remove_from_wishlist(request, id):
     WishlistItem.objects.filter(id=id).delete()
     return JsonResponse({'message': 'Item deleted from wishlist'})
 
-@login_required
+@csrf_exempt
 def add_to_wishlist(request, id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'auth': False})
+    
     user = request.user
     item = get_object_or_404(Item, id=id)
     wishlist, created = Wishlist.objects.get_or_create(user=user)
@@ -189,4 +223,45 @@ def add_to_wishlist(request, id):
         wishlist_item.quantity += 1
         wishlist_item.save()
 
-    return JsonResponse({'message': 'Item added to wishlist successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to wishlist successfully'})
+
+@csrf_exempt
+def change_quantity(request, id):
+    diff = int(request.POST.get("diff"))
+    list_type = request.POST.get("list_type")
+    if list_type == "cart":
+        model = CartItem
+    elif list_type == "wishlist":
+        model = WishlistItem
+    list_item = model.objects.get(id=id)
+    list_item.quantity += diff
+    list_item.save()
+    return JsonResponse({"quantity": list_item.quantity})
+
+@csrf_exempt
+def move_to_cart(request, id):
+    item = WishlistItem.objects.get(id=id).item
+    remove_from_wishlist(request, id)
+    add_to_cart(request, item.id)
+    return JsonResponse({})
+
+@csrf_exempt
+def move_to_wishlist(request, id):
+    item = CartItem.objects.get(id=id).item
+    remove_from_cart(request, id)
+    add_to_wishlist(request, item.id)
+    return JsonResponse({})
+
+class OrdersView(LoginRequiredMixin, generic.ListView):
+    template_name = "orders.html"
+    # template_name = "category.html"  # Use navbar.html as the template
+    def get_queryset(self):
+        return Order.objects.filter(user= self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = Order.objects.filter(user= self.request.user)
+        orders_items = OrderItem.objects.filter(order__in=orders)       
+        
+        context['orders'] = orders
+        context['orders_items'] = orders_items
+        return context

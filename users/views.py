@@ -5,8 +5,8 @@ import string
 import csv
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
-from .forms import CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
-from sales.models import Item, Cart
+from .forms import CategoryForm, CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
+from sales.models import Category, Item, Cart, CartItem, OrderItem, Order
 # Create your views here.
 
 class LandingPageView(generic.ListView):
@@ -46,27 +46,25 @@ class OurTeamView(generic.TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-class ItemListView(generic.TemplateView):
+class ItemListView(generic.ListView):
     template_name = "products-display.html"
     context_object_name = "prods_list"
-
-    # def get_queryset(self) :
-    #     queryset = Item.objects.all().values()
-    #     return queryset
-
+    paginate_by = 24
+    
+    def get_queryset(self):
+            sort_by = self.request.GET.get('sort_by')
+            if sort_by == None:
+                sort_by = "descending"
+            if sort_by == "ascending":
+                return Item.objects.all().order_by('retail_price')
+            if sort_by == "descending":
+                return Item.objects.all().order_by('-retail_price')
+    
     def get_context_data(self, **kwargs):
-        context = super(ItemListView, self).get_context_data(**kwargs)
-        user = self.request.user
-        
-        queryset = Item.objects.all().values()[:24]
-        context.update({
-                "prods_list": queryset
-            })
-        
-        return context  
-
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
     
 class MembershipPlanView(generic.TemplateView):
     template_name = "plan.html"
@@ -89,16 +87,53 @@ class TrialSuccessView(generic.TemplateView):
         return super().dispatch(request, *args, **kwargs)
     
 class SearchView(generic.ListView):
+    paginate_by = 24
     template_name = 'products-display.html'
     context_object_name = 'prods_list'
     form_class = SearchForm
 
     def get_queryset(self):
         query = self.request.GET.get('query')
-        if query:
-            return Item.objects.filter(name__icontains=query)[:24]
-        return {}
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by == None:
+            sort_by = "descending"
+        if sort_by == "ascending":
+            return Item.objects.filter(name__icontains=query).order_by('retail_price')
+        if sort_by == "descending":
+            return Item.objects.filter(name__icontains=query).order_by('-retail_price')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
 
+class CategoryFilterView(generic.ListView):
+    paginate_by = 24
+    template_name = 'products-display.html'
+    context_object_name = 'prods_list'
+    form_class = CategoryForm
+
+    def get_queryset(self):
+        query = self.request.GET.get('CategoryQuery')
+        print("query is :", query)
+        categoryInstance = Category.objects.get(name=query)
+        sort_by = self.request.GET.get('sort_by')
+        if sort_by == None:
+            sort_by = "descending"
+        if sort_by == "ascending":
+            return Item.objects.filter(category=categoryInstance).order_by('retail_price')
+        if sort_by == "descending":
+            return Item.objects.filter(category=categoryInstance).order_by('-retail_price')
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categories = (Category.objects.all()[:10])
+        context['categories'] = categories
+        return context
+    
+      
 class LogisticsView(generic.CreateView):
     template_name = "logistics.html"
     form_class = LogsisticsForm
@@ -109,6 +144,12 @@ class LogisticsView(generic.CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         user = self.request.user
+        return form
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['address'] = self.request.user.address
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -117,6 +158,22 @@ class LogisticsView(generic.CreateView):
         return context
     
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        instance.save()
+        order = form.save(commit=False)
+
+        user = self.request.user
+        cart = Cart.objects.get(user=user)
+
+        order.user  = self.request.user
+        order.total_amount = cart.total_amount
+        order.save()
+
+        # THIS CODE IS FOR LATER
+        # cart_items = CartItem.objects.filter(cart=cart)
+        # for cart_item in cart_items:
+        #     order_item = OrderItem()
+        #     order_item.order = order
+        #     order_item.quantity = cart_item.quantity
+        #     order_item.item = cart_item.item
+        #     order_item.save()
+            
         return super(LogisticsView,self).form_valid(form)
