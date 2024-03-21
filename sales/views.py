@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 from django.db.models.query import QuerySet
 from django.forms import model_to_dict
 from django.views import generic
@@ -29,7 +30,8 @@ def load_wishlist(request):
         data.append({
             "id": wishlist_item.id,
             "quantity": wishlist_item.quantity,
-            "item": model_to_dict(wishlist_item.item)
+            "item": model_to_dict(wishlist_item.item),
+            "category": wishlist_item.item.category
         })
     return JsonResponse({"h": render_to_string(request=request, template_name="wishlist_content.html", context={"wishlist_items": data})})
     
@@ -218,3 +220,17 @@ def move_to_wishlist(request, id):
     remove_from_cart(request, id)
     add_to_wishlist(request, item.id)
     return JsonResponse({})
+
+class OrdersView(LoginRequiredMixin, generic.ListView):
+    template_name = "orders.html"
+    # template_name = "category.html"  # Use navbar.html as the template
+    def get_queryset(self):
+        return Order.objects.filter(user= self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orders = Order.objects.filter(user= self.request.user)
+        orders_items = OrderItem.objects.filter(order__in=orders)       
+        
+        context['orders'] = orders
+        context['orders_items'] = orders_items
+        return context

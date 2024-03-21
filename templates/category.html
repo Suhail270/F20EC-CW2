@@ -1,7 +1,12 @@
-<div class="categories-container" style="margin-top: 90px;"> <!-- Added margin-top -->
-    <p> heloooo worldd </p>
+<div class="categories-container" > <!-- Added margin-top -->
+    
     {% for category in categories %}
-      <div class="category">{{ category }}</div> <!-- Category name -->
+      
+      <form method="GET" action="{% url 'products-list-category' %}">
+        
+        
+        <button class="category" onclick=submit value="{{ category }}" name="CategoryQuery">{{ category }}</button>
+    </form>
     {% endfor %}
   </div>
   
