@@ -143,7 +143,7 @@ class SuccessView(generic.TemplateView):
                 user=self.request.user,
                 ordered_date=timezone.now(),
                 address=self.request.user.address,
-                mode_of_payment=ModeOfPayment.objects.get(name="COD"),
+                mode_of_payment=ModeOfPayment.objects.get(name="Cash on Delivery"),
                 total_amount=cart.total_amount
             )
 
