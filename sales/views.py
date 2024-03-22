@@ -114,14 +114,16 @@ class PaymentSuccessView(generic.TemplateView):
             )
 
             cart_items = cart.cartitem_set.all()
+            
             for cart_item in cart_items:
                 OrderItem.objects.create(
                     order=order,
                     item=cart_item.item,
                     quantity=cart_item.quantity
                 )
-
-            cart.delete()
+                cart_item.delete()
+            
+            cart.total_amount = 0
 
         return response
 
