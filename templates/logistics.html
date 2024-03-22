@@ -2,16 +2,22 @@
 {% load tailwind_filters %}
 
 {% block content %}
-
 <div class="max-w-lg mx-auto mt-32">
-    <p >Enter Delivery Address and choose mode of payment.</p>
-    <form method="get" class="mt-5">
+    <p>Enter Delivery Address and choose mode of payment.</p>
+    <form method="post" action="{% url 'create-checkout-session' %}" class="mt-5">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type='submit' class="w-full text-white bg-blue-500 px-3 py-2 rounded-md" style="background-color: #154c79;">
-            Proceed To Payment.
+        <button type="submit" class="w-full text-white bg-blue-500 px-3 py-2 rounded-md" style="background-color: #154c79;">
+            Proceed
         </button>
     </form>
-    
+    <br>
+    <button onclick="goBack()" class="w-full text-white bg-blue-500 px-3 py-2 rounded-md" style="background-color: #154c79;">Cancel</button>
+
+    <script>
+        function goBack() {
+            window.location.href = "{% url 'cart' %}";  // Replace 'second_view' with your desired URL name
+        }
+        </script>
 </div>
 {% endblock content %}

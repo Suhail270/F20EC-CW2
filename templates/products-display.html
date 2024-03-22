@@ -24,7 +24,9 @@
         <div class="mt-n4 flex flex-col justify-between h-full"> <!-- Adjusted margin-top to -4 -->
           <div>
             <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{prod.category}}</h3>
-            <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
+            <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" >
+              <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
+            </a>
             <p class="mt-1">{{prod.retail_price}}</p>
           </div>
           <div class="mt-0"> <!-- Added text-right class and adjusted margin -->

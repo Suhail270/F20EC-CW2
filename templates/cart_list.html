@@ -1,12 +1,20 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
-  function quantityFunc(url, diff, id) {
+  document.querySelector(".quantity-input").addEventListener("keypress", function (evt) {
+    if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
+    {        evt.preventDefault();
+    }
+});
+// 0 for null values// 8 for backspace // 48-57 for 0-9 numbers
+// has context menu
+  function quantityFunc(url, diff, id, alt) {
     $.ajax({
       url: url,
       method: "POST",
       data: {
         "diff": diff,
-        "list_type": "cart"
+        "list_type": "cart",
+        "alt": alt
       },
       success: function (data) {
         qid = "#quantity" + id;
@@ -91,7 +99,8 @@
       .quantity-input {
           width: 40px;
           text-align: center;
-          margin: 4px 8px 4px 0;
+          margin: 4px 8px 4px 8px;
+          
           border: none;
           background: none;
           outline: none;
@@ -135,9 +144,14 @@
         padding: 8px 16px;
         font-size: 16px;
     }
+    input[type='number']::-webkit-inner-spin-button, 
+    input[type='number']::-webkit-outer-spin-button { 
+    -webkit-appearance: none;    margin: 0;
+    }
   </style>
   <div class="table-container">
       {% if cart_items %}
+      <div><strong>Total Amount: {{cart_amt}}</strong></div>
     <table class="table-style">
       <thead >
           <tr >
@@ -158,9 +172,9 @@
     <td>{{cart_item.category}}</td>
     <td style="align-items: self-start;">
     <div class="quantity-container">
-      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}});" >+</button>
-      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}">
-      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}});" >-</button>
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}}, false);" >+</button>
+      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}" onblur="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', $('#quantity{{cart_item.id}}').val(), {{cart_item.id}}, true);">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}}, false);" >-</button>
     </div>
     </td>
     <td>{{cart_item.item.retail_price}}</td>
