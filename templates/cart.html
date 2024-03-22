@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block script %} <script src="https://js.stripe.com/v3/"></script> {% endblock script%} 
+
 {% block content %}
 <style>body{
   padding-top: 10%;
@@ -16,17 +18,18 @@
     {% comment %} cart_list.html {% endcomment %}
   </div>
 
+  <div class="flex justify-center" style="padding: 10px;">
+    <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded-full" style="background-color: #154c79;">Confirm Order</a>
+  </div>
+
   <h1 style="padding: 10px; font-size: xx-large;"><strong><center>Wishlist Items</center></strong> </h1>
 
   <div id="wishlist" class=" px-5 py-24 mx-auto">
     {% comment %} wishlist_contents.html {% endcomment %}
   </div>
 
-    <div class="flex justify-center" style="padding: 10px;">
-        <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded-full" style="background-color: #154c79;">Confirm Order</a>
-    </div>
+<div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
 
-</section>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 

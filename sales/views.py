@@ -223,9 +223,9 @@ def move_to_wishlist(request, id):
 
 class OrdersView(LoginRequiredMixin, generic.ListView):
     template_name = "orders.html"
-    # template_name = "category.html"  # Use navbar.html as the template
     def get_queryset(self):
         return Order.objects.filter(user= self.request.user)
+        # return Order.objects.filter(user=self.request.user).order_by('-ordered_date')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         orders = Order.objects.filter(user= self.request.user)

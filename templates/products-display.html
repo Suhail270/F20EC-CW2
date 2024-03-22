@@ -28,7 +28,7 @@
             <p class="mt-1">{{prod.retail_price}}</p>
           </div>
           <div class="mt-0"> <!-- Added text-right class and adjusted margin -->
-            <button onclick="add_item('{% url 'add_to_wishlist' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button> <!-- Wishlist button -->
+            <button onclick="add_item('{% url 'add_to_wishlist' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
             <button onclick="add_item('{% url 'add_to_cart' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Cart</button>
           </div>
         </div>
@@ -67,21 +67,26 @@
 </style>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
   function add_item(listUrl) {
     $.ajax({
-      method: "POST",
-      url: listUrl,
-      success: function (data) {
-        if (!data.auth) {
-          window.location = "{% url 'login' %}";
-        } else {
-          window.alert(data.message);
+        method: "POST",
+        url: listUrl,
+        success: function (data) {
+            if (!data.auth) {
+                window.location = "{% url 'login' %}";
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                });
+            }
         }
-      }
     });
-  }
+}
   const url = new URL(window.location.href);
   const query = url.searchParams.get('query');
   const current_sort = url.searchParams.get('sort_by');
