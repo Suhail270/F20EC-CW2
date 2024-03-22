@@ -8,6 +8,7 @@ urlpatterns = [
     # path('create-checkout-session/', views.create_checkout_session),
     # path('success/', views.PaymentSuccessView.as_view()),
     path('payment_success/', views.PaymentSuccessView.as_view(), name='payment_success'),
+    path('success/',views.SuccessView.as_view(),name='success')
     # path('cancelled/', views.CancelledView.as_view()),
     # path('webhook/', views.stripe_webhook),
 ]   

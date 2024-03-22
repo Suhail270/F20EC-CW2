@@ -71,7 +71,12 @@ class CreateStripeCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         cart = Cart.objects.filter(user=request.user).first()
         price = cart.total_amount
-
+        print('mode',type(request.POST.get('mode_of_payment')))
+        print('mode pk',ModeOfPayment.objects.get(name='COD').pk)
+        print(request.POST.get('mode_of_payment') == ModeOfPayment.objects.get(name='COD').pk)
+        if int(request.POST.get('mode_of_payment')) == ModeOfPayment.objects.get(name='COD').pk:
+            print("here")
+            return redirect('success')
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[
@@ -124,6 +129,38 @@ class PaymentSuccessView(generic.TemplateView):
             cart.delete()
 
         return response
+
+class SuccessView(generic.TemplateView):
+    template_name = "success.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        response = super().dispatch(request, *args, **kwargs)
+
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if cart:
+            order = Order.objects.create(
+                user=self.request.user,
+                ordered_date=timezone.now(),
+                address=self.request.user.address,
+                mode_of_payment=ModeOfPayment.objects.get(name="COD"),
+                total_amount=cart.total_amount
+            )
+
+            cart_items = cart.cartitem_set.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    item=cart_item.item,
+                    quantity=cart_item.quantity
+                )
+                cart_item.delete()
+
+            cart.total_amount = 0
+            cart.save()
+
+        return response
+
 
 
 class CategoryView(generic.ListView):
@@ -298,7 +335,7 @@ class OrdersView(LoginRequiredMixin, generic.ListView):
         return Order.objects.filter(user= self.request.user)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        orders = Order.objects.filter(user= self.request.user)
+        orders = Order.objects.filter(user= self.request.user).order_by('ordered_date').reverse()
         orders_items = OrderItem.objects.filter(order__in=orders)       
         
         context['orders'] = orders
