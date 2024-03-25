@@ -147,35 +147,32 @@ class LogisticsView(generic.CreateView):
     form_class = LogsisticsForm
 
     def get_success_url(self):
-        return reverse("payment_success.html")
-    
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        user = self.request.user
-        return form
-    
+        return reverse("payment_success")
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['address'] = self.request.user.address
         return kwargs
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
-        context['address'] = user.address
+        context['address'] = self.request.user.address
         return context
-    
+
     def form_valid(self, form):
         order = form.save(commit=False)
 
         user = self.request.user
         cart = Cart.objects.get(user=user)
 
-        order.user  = self.request.user
+        user.address = form.cleaned_data['address']
+        user.save()
+
+        order.user = self.request.user
         order.total_amount = cart.total_amount
         order.save()
 
-        # THIS CODE IS FOR LATER
+        # YOUR CODE FOR LATER USE
         # cart_items = CartItem.objects.filter(cart=cart)
         # for cart_item in cart_items:
         #     order_item = OrderItem()
@@ -184,4 +181,4 @@ class LogisticsView(generic.CreateView):
         #     order_item.item = cart_item.item
         #     order_item.save()
             
-        return super(LogisticsView,self).form_valid(form)
+        return super().form_valid(form)

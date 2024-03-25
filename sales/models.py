@@ -48,10 +48,16 @@ class Order(models.Model):
     mode_of_payment = models.ForeignKey(ModeOfPayment, on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    def __str__(self) :
+        return f"{self.user.username} - {self.ordered_date}: {self.total_amount}"
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self) :
+        return self.order.user.username + " - " + self.item.name + ": " + self.order.ordered_date.strftime("%Y-%m-%d %H:%M:%S")
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

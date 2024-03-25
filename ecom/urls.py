@@ -77,4 +77,5 @@ urlpatterns = [
     path('logistics/', LogisticsView.as_view(), name='logistics'),
     path('item/<int:pk>/', ItemDetailView.as_view(), name='item_detail'),
     path('', include('sales.urls')), # new
+
 ]

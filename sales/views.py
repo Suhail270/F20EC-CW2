@@ -9,7 +9,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category
+from .models import Order, OrderItem, Item, Wishlist, WishlistItem, Cart, CartItem, Category, ModeOfPayment
 import stripe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView, View
@@ -45,9 +45,11 @@ def load_cart_items(request):
             "id": cart_item.id,
             "quantity": cart_item.quantity,
             "item": model_to_dict(cart_item.item),
-            "category": cart_item.item.category
+            "category": cart_item.item.category,
+            
         })
-    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data})})
+    
+    return JsonResponse({"h": render_to_string(request=request, template_name="cart_list.html", context={"cart_items": data,'cart_amt' : cart.total_amount})})
 
 # class CategoryView(generic.TemplateView):
 #     template_name = "category.html"  # Use navbar.html as the template
@@ -64,12 +66,14 @@ class PaymentView(generic.TemplateView):
 # @login_required
 class CreateStripeCheckoutSessionView(View):
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
+    stripe.api_key = 'sk_test_51Os180JDw3WYrLo5uSYV1Wgv6UfqWv1wiEoKMyVnYjOFjF3UcyaxMQE5Xya0qfmyGkhfx4GafZITxtP1VVw9G5Xt00C0OEUdxM'
 
     def post(self, request, *args, **kwargs):
         cart = Cart.objects.filter(user=request.user).first()
         price = cart.total_amount
-
+        if int(request.POST.get('mode_of_payment')) == ModeOfPayment.objects.get(name='Cash on Delivery').pk:
+            print("here")
+            return redirect('success')
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[
@@ -86,17 +90,75 @@ class CreateStripeCheckoutSessionView(View):
                 }
             ],
             mode="payment",
-            success_url='http://127.0.0.1:8000/success/',
+            success_url='http://127.0.0.1:8000/payment_success/',
             # cancel_url=,
         )
+        
         return redirect(checkout_session.url)
+
 
 
 class PaymentSuccessView(generic.TemplateView):
     template_name = "payment_success.html"
 
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+
+        response = super().dispatch(request, *args, **kwargs)
+
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if cart:
+            order = Order.objects.create(
+                user=self.request.user,
+                ordered_date=timezone.now(),
+                address=self.request.user.address,
+                mode_of_payment=ModeOfPayment.objects.get(name="Credit/Debit Card"),
+                total_amount=cart.total_amount
+            )
+
+            cart_items = cart.cartitem_set.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    item=cart_item.item,
+                    quantity=cart_item.quantity
+                )
+
+            cart.delete()
+
+        return response
+
+class SuccessView(generic.TemplateView):
+    template_name = "success.html"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        response = super().dispatch(request, *args, **kwargs)
+
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if cart:
+            order = Order.objects.create(
+                user=self.request.user,
+                ordered_date=timezone.now(),
+                address=self.request.user.address,
+                mode_of_payment=ModeOfPayment.objects.get(name="Cash on Delivery"),
+                total_amount=cart.total_amount
+            )
+
+            cart_items = cart.cartitem_set.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    item=cart_item.item,
+                    quantity=cart_item.quantity
+                )
+                cart_item.delete()
+
+            cart.total_amount = 0
+            cart.save()
+
+        return response
+
+
 
 class CategoryView(generic.ListView):
     template_name = "category.html"
@@ -130,7 +192,7 @@ def create_checkout_session(request):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
             checkout_session = stripe.checkout.Session.create(
-                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                success_url=domain_url + 'payment_success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=domain_url + 'cancelled/',
                 payment_method_types=['card'],
                 mode='payment',
@@ -197,7 +259,12 @@ def add_to_cart(request, id):
 
 @csrf_exempt
 def remove_from_cart(request, id):
+    itm = CartItem.objects.filter(id=id).first()
+    amount = itm.quantity * itm.item.retail_price
     CartItem.objects.filter(id=id).delete()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount -= amount
+    cart.save()
     return JsonResponse({'message': 'Item deleted from cart'})
 
 @csrf_exempt
@@ -235,11 +302,13 @@ def change_quantity(request, id):
     elif list_type == "wishlist":
         model = WishlistItem
     list_item = model.objects.get(id=id)
-    if alt:
-        list_item.quantity = diff
-    else:
-        list_item.quantity += diff
+    
+    amount = list_item.item.retail_price * diff
+    list_item.quantity += diff
     list_item.save()
+    cart = Cart.objects.filter(user=request.user).first()
+    cart.total_amount += amount
+    cart.save()
     return JsonResponse({"quantity": list_item.quantity})
 
 @csrf_exempt
@@ -258,12 +327,12 @@ def move_to_wishlist(request, id):
 
 class OrdersView(LoginRequiredMixin, generic.ListView):
     template_name = "orders.html"
-    # template_name = "category.html"  # Use navbar.html as the template
     def get_queryset(self):
         return Order.objects.filter(user= self.request.user)
+        # return Order.objects.filter(user=self.request.user).order_by('-ordered_date')
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        orders = Order.objects.filter(user= self.request.user)
+        orders = Order.objects.filter(user= self.request.user).order_by('ordered_date').reverse()
         orders_items = OrderItem.objects.filter(order__in=orders)       
         
         context['orders'] = orders
