@@ -71,7 +71,7 @@ class CreateStripeCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         cart = Cart.objects.filter(user=request.user).first()
         price = cart.total_amount
-        if int(request.POST.get('mode_of_payment')) == ModeOfPayment.objects.get(name='Cash on Delivery').pk:
+        if int(request.POST.get('mode_of_payment')) == ModeOfPayment.objects.get(name='Cash on Delivery (COD)').pk:
             print("here")
             return redirect('success')
         checkout_session = stripe.checkout.Session.create(
@@ -142,7 +142,7 @@ class SuccessView(generic.TemplateView):
                 user=self.request.user,
                 ordered_date=timezone.now(),
                 address=self.request.user.address,
-                mode_of_payment=ModeOfPayment.objects.get(name="Cash on Delivery"),
+                mode_of_payment=ModeOfPayment.objects.get(name="Cash on Delivery (COD)"),
                 total_amount=cart.total_amount
             )
 

@@ -25,7 +25,8 @@ SECRET_KEY = "django-insecure-+h@ensr_^+=@xunl9q51#2jg56#maosdwlu8g=05=7__8j_5jk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0',]
+ALLOWED_HOSTS = ['0.0.0.0',
+                 '127.0.0.1',]
 
 
 # Application definition
@@ -90,13 +91,22 @@ WSGI_APPLICATION = "ecom.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': 'mm2107',  
-        'USER': 'mm2107',
-        'PASSWORD': 'wnd4VKSANY3',
-        'HOST': '132.145.18.222',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "wattmart",
+        'USER': "wmart",
+        'PASSWORD': "wmart123",
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql.connector.django',
+#         'NAME': 'mm2107',  
+#         'USER': 'mm2107',
+#         'PASSWORD': 'wnd4VKSANY3',
+#         'HOST': '132.145.18.222',
+#     }
+# }
 
 
 # Password validation
