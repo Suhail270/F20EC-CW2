@@ -28,7 +28,7 @@
             <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" >
               <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
             </a>
-            <p class="mt-1">{{prod.retail_price}}</p>
+            <p class="mt-1"> £ {{prod.retail_price}}</p>
           </div>
           <div class="mt-0"> <!-- Added text-right class and adjusted margin -->
             <button onclick="add_item('{% url 'add_to_wishlist' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
