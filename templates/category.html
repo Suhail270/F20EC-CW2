@@ -1,6 +1,6 @@
 <div class="categories-container" >
     {% for category in categories %}
-      <form method="GET" action="{% url 'products-list-category' %}">
+      <form id="cat-form" method="GET" action="{% url 'products-list-category' %}">
         <button class="category" onclick=submit value="{{ category }}" name="CategoryQuery">{{ category }}</button>
     </form>
     {% endfor %}

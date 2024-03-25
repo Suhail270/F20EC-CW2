@@ -53,8 +53,8 @@ class ItemListView(generic.ListView):
     
     def get_queryset(self):
             sort_by = self.request.GET.get('sort_by')
-            if sort_by == None:
-                sort_by = "descending"
+            if sort_by == None or sort_by == "none":
+                return Item.objects.all()
             if sort_by == "ascending":
                 return Item.objects.all().order_by('retail_price')
             if sort_by == "descending":
@@ -95,8 +95,8 @@ class SearchView(generic.ListView):
     def get_queryset(self):
         query = self.request.GET.get('query')
         sort_by = self.request.GET.get('sort_by')
-        if sort_by == None:
-            sort_by = "descending"
+        if sort_by == None or sort_by == "none":
+                return Item.objects.filter(name__icontains=query)
         if sort_by == "ascending":
             return Item.objects.filter(name__icontains=query).order_by('retail_price')
         if sort_by == "descending":
@@ -117,11 +117,19 @@ class CategoryFilterView(generic.ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('CategoryQuery')
-        print("query is :", query)
-        categoryInstance = Category.objects.get(name=query)
         sort_by = self.request.GET.get('sort_by')
-        if sort_by == None:
-            sort_by = "descending"
+        print("query is :", query)
+        if query is not None and query != "none":
+            categoryInstance = Category.objects.get(name=query)
+        else:
+            if sort_by == None or sort_by == "none":
+                return Item.objects.all()
+            if sort_by == "ascending":
+                return Item.objects.all().order_by('retail_price')
+            if sort_by == "descending":
+                return Item.objects.all().order_by('-retail_price')
+        if sort_by == None or sort_by == "none":
+            return Item.objects.filter(category=categoryInstance)
         if sort_by == "ascending":
             return Item.objects.filter(category=categoryInstance).order_by('retail_price')
         if sort_by == "descending":
