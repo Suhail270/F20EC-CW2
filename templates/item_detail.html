@@ -18,13 +18,10 @@
         <div class="details-container">
           <h1 class="mb-6 text-2xl"><strong>{{ object.name }}</strong></h1> <!-- Increased item name size -->
           <p class="mb-4"><strong>Category:</strong> {{ object.category_tree }}</p> <!-- Added more space after each row -->
-          <p class="mb-4"><strong>Retail Price:</strong> ${{ object.retail_price }}</p> <!-- Added more space after each row -->
+          <p class="mb-4"><strong>Retail Price:</strong> {{ object.retail_price }}</p> <!-- Added more space after each row -->
           <p class="mb-4"><strong>Description:</strong> {{ object.description }}</p> <!-- Added more space after each row -->
-          <button type="submit" class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded mb-6" style="background-color: #154c79;">Add to Wishlist</button>
-          <form action="{% url 'add_to_cart' id=object.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded mb-6" style="background-color: #154c79;">Add to Cart</button>
-          </form>
+          <button onclick="add_item('{% url 'add_to_wishlist' id=object.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
+          <button onclick="add_item('{% url 'add_to_cart' id=object.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Cart</button>
         </div>
       </div>
     </div>
@@ -59,5 +56,28 @@
     object-fit: contain;
   }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+  function add_item(listUrl) {
+    $.ajax({
+        method: "POST",
+        url: listUrl,
+        success: function (data) {
+            if (!data.auth) {
+                window.location = "{% url 'login' %}";
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                });
+            }
+        }
+    });
+}
+</script>
 
 {% endblock content %}
