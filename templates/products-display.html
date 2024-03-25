@@ -16,6 +16,7 @@
 
   <div class="container px-5 py-24 mx-auto" style="padding-top: 20px;">
     <div class="flex flex-wrap -m-4">
+      {% if prods_list%}
       {% for prod in prods_list %}
       <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px;"> <!-- Reduced margin-bottom -->
         <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" style="height: 300px;"> <!-- Reduced height of image container -->
@@ -36,6 +37,10 @@
         </div>
       </div>
       {% endfor %}
+      {%endif%}
+      {%if not prods_list%}
+      <div style="text-align: center; padding: auto;"><strong><p>No products to display</p></strong></div>
+      {%endif%}
     </div>
   </div>
 
