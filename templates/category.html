@@ -1,10 +1,28 @@
 <div class="categories-container" >
     {% for category in categories %}
-      <form method="GET" action="{% url 'products-list-category' %}">
+      <form class="cat-form-class" id="cat-form" method="GET" action="{% url 'products-list-category' %}">
         <button class="category" onclick=submit value="{{ category }}" name="CategoryQuery">{{ category }}</button>
     </form>
     {% endfor %}
-  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+  let currentParamsC = new URLSearchParams(window.location.search);
+    if (currentParamsC.has('sort_by')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'sort_by')
+            .attr('value', currentParamsC.get('sort_by'))
+            .appendTo('.cat-form-class');
+    }
+    if (currentParamsC.has('query')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'query')
+            .attr('value', currentParams.get('query'))
+            .appendTo('.cat-form-class');
+    }
+</script>
   
   <style>
     /* Style for categories */

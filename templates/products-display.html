@@ -6,9 +6,9 @@
 <section class="text-gray-600 body-font mt-32">
   {% include 'category.html' %}
   <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
-    <input id="query-input" type="text" name="query" hidden/>
     <label for="sort_by">Sort by:</label>
     <select name="sort_by" id="sort_by">
+      <option value="none">Relevance</option>
       <option value="descending">Price (descending)</option>
       <option value="ascending">Price (ascending)</option>
     </select>
@@ -72,6 +72,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
+
+  let currentParamsPD = new URLSearchParams(window.location.search);
+    if (currentParamsPD.has('CategoryQuery')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'CategoryQuery')
+            .attr('value', currentParamsPD.get('CategoryQuery'))
+            .appendTo('#sort-form');
+    }
+    if (currentParamsPD.has('query')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'query')
+            .attr('value', currentParamsPD.get('query'))
+            .appendTo('#sort-form');
+    }
+
   function add_item(listUrl) {
     $.ajax({
         method: "POST",
@@ -91,13 +106,18 @@
 }
   const url = new URL(window.location.href);
   const query = url.searchParams.get('query');
+  const category = url.searchParams.get('CategoryQuery');
   const current_sort = url.searchParams.get('sort_by');
+  if (!(category == null || category === "None")) {
+    console.log('here');
+    let noneForm = '<form id="cat-form" method="GET" action="/filter/"><button class="category" onclick="submit" value="none" name="CategoryQuery">All Categories</button></form>';
+    $('.categories-container').html(noneForm + $('.categories-container').html()); 
+  }
   if (current_sort == null) {
-    $('#sort_by').val("descending");
+    $('#sort_by').val("none");
   } else {
     $('#sort_by').val(current_sort);
   }
-  $('#query-input').value = query;
   $('#sort_by').change(() => {
     $('#sort-form').submit();
   })
