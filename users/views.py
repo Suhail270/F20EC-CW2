@@ -52,13 +52,22 @@ class ItemListView(generic.ListView):
     paginate_by = 24
     
     def get_queryset(self):
-            sort_by = self.request.GET.get('sort_by')
-            if sort_by == None or sort_by == "none":
-                return Item.objects.all()
-            if sort_by == "ascending":
-                return Item.objects.all().order_by('retail_price')
-            if sort_by == "descending":
-                return Item.objects.all().order_by('-retail_price')
+        category = self.request.GET.get('CategoryQuery')
+        sort_by = self.request.GET.get('sort_by')
+        query = self.request.GET.get('query')
+        filter_args = {}
+        print("query is :", category)
+        if query is not None:
+            filter_args["name__icontains"] = query
+        if category is not None and category != "none":
+            categoryInstance = Category.objects.get(name=category)
+            filter_args["category"] = categoryInstance
+        if sort_by == None or sort_by == "none":
+            return Item.objects.filter(**filter_args)
+        if sort_by == "ascending":
+            return Item.objects.filter(**filter_args).order_by('retail_price')
+        if sort_by == "descending":
+            return Item.objects.filter(**filter_args).order_by('-retail_price')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,63 +93,7 @@ class PaymentSuccessView(generic.TemplateView):
 class TrialSuccessView(generic.TemplateView):
     template_name = "freeTrial.html"
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-    
-class SearchView(generic.ListView):
-    paginate_by = 24
-    template_name = 'products-display.html'
-    context_object_name = 'prods_list'
-    form_class = SearchForm
-
-    def get_queryset(self):
-        query = self.request.GET.get('query')
-        sort_by = self.request.GET.get('sort_by')
-        if sort_by == None or sort_by == "none":
-                return Item.objects.filter(name__icontains=query)
-        if sort_by == "ascending":
-            return Item.objects.filter(name__icontains=query).order_by('retail_price')
-        if sort_by == "descending":
-            return Item.objects.filter(name__icontains=query).order_by('-retail_price')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        categories = (Category.objects.all()[:10])
-        context['categories'] = categories
-        return context
-    
-
-class CategoryFilterView(generic.ListView):
-    paginate_by = 24
-    template_name = 'products-display.html'
-    context_object_name = 'prods_list'
-    form_class = CategoryForm
-
-    def get_queryset(self):
-        query = self.request.GET.get('CategoryQuery')
-        sort_by = self.request.GET.get('sort_by')
-        print("query is :", query)
-        if query is not None and query != "none":
-            categoryInstance = Category.objects.get(name=query)
-        else:
-            if sort_by == None or sort_by == "none":
-                return Item.objects.all()
-            if sort_by == "ascending":
-                return Item.objects.all().order_by('retail_price')
-            if sort_by == "descending":
-                return Item.objects.all().order_by('-retail_price')
-        if sort_by == None or sort_by == "none":
-            return Item.objects.filter(category=categoryInstance)
-        if sort_by == "ascending":
-            return Item.objects.filter(category=categoryInstance).order_by('retail_price')
-        if sort_by == "descending":
-            return Item.objects.filter(category=categoryInstance).order_by('-retail_price')
-        
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        categories = (Category.objects.all()[:10])
-        context['categories'] = categories
-        return context
-    
+        return super().dispatch(request, *args, **kwargs)  
       
 class LogisticsView(generic.CreateView):
     template_name = "logistics.html"

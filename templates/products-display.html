@@ -6,7 +6,6 @@
 <section class="text-gray-600 body-font mt-32">
   {% include 'category.html' %}
   <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
-    <input id="query-input" type="text" name="query" hidden/>
     <label for="sort_by">Sort by:</label>
     <select name="sort_by" id="sort_by">
       <option value="none">Relevance</option>
@@ -73,6 +72,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
+
+  let currentParamsPD = new URLSearchParams(window.location.search);
+    if (currentParamsPD.has('CategoryQuery')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'CategoryQuery')
+            .attr('value', currentParamsPD.get('CategoryQuery'))
+            .appendTo('#sort-form');
+    }
+    if (currentParamsPD.has('query')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'query')
+            .attr('value', currentParamsPD.get('query'))
+            .appendTo('#sort-form');
+    }
+
   function add_item(listUrl) {
     $.ajax({
         method: "POST",
@@ -104,7 +118,6 @@
   } else {
     $('#sort_by').val(current_sort);
   }
-  $('#query-input').value = query;
   $('#sort_by').change(() => {
     $('#sort-form').submit();
   })

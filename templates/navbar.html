@@ -86,7 +86,7 @@
         {% endif %}
 
         <!-- Search bar -->
-        <form action="{% url 'products-list' %}" method="get" class="flex items-center flex-grow mb-4 md:mb-0 mr-4">
+        <form id="search-bar" action="{% url 'products-list' %}" method="get" class="flex items-center flex-grow mb-4 md:mb-0 mr-4">
           <input type="text" name="query" placeholder="Search" class="flex-grow px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500" />
           <button type="submit" class="ml-2 bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600" style="background-color: #ffffff; color: black;">
               Search
@@ -132,3 +132,21 @@
 
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+    let currentParams = new URLSearchParams(window.location.search);
+    if (currentParams.has('CategoryQuery')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'CategoryQuery')
+            .attr('value', currentParams.get('CategoryQuery'))
+            .appendTo('#search-bar');
+    }
+    if (currentParams.has('sort_by')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'sort_by')
+            .attr('value', currentParams.get('sort_by'))
+            .appendTo('#search-bar');
+    }
+</script>
