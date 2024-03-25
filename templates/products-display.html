@@ -6,7 +6,7 @@
 <section class="text-gray-600 body-font mt-32">
   {% include 'category.html' %}
   <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
-    <label for="sort_by">Sort by:</label>
+    <label for="sort_by" style="margin-left: 35px;">Sort by:</label>
     <select name="sort_by" id="sort_by">
       <option value="none">Relevance</option>
       <option value="descending">Price (descending)</option>
@@ -40,6 +40,7 @@
   </div>
 
   {% comment %} Pagination code from the django docs {% endcomment %}
+  <div class="pagination-container" style="text-align: center; margin-top: 20px;"> <!-- Added container and styles -->
   <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -56,6 +57,7 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </span>
+  </div>
   </div>
 
 </section>
