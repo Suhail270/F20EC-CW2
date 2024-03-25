@@ -18,7 +18,7 @@
     <div class="flex flex-wrap -m-4">
       {% if prods_list%}
       {% for prod in prods_list %}
-      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px;"> <!-- Reduced margin-bottom -->
+      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px; min-width: 250px;"> <!-- Reduced margin-bottom -->
         <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" style="height: 300px;"> <!-- Reduced height of image container -->
           <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{prod.image}}">
         </a>      

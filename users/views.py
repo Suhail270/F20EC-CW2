@@ -64,11 +64,28 @@ class ItemListView(generic.ListView):
         query = self.request.GET.get('query')
         filter_args = {}
         print("query is :", category)
-        if query is not None:
-            filter_args["name__icontains"] = query
-        if category is not None and category != "none":
-            categoryInstance = Category.objects.get(name__icontains=category)
-            filter_args["category"] = categoryInstance
+        latest_get_request = list(self.request.GET.keys())
+        try:
+            if latest_get_request[0] == 'sort_by':
+                print("incase of sort")
+                print(latest_get_request[1])
+                if latest_get_request[1] == 'query':
+                    filter_args = {}
+                    filter_args["name__icontains"] = query
+                elif latest_get_request[1] == 'CategoryQuery':
+                    filter_args = {}
+                    categoryInstance = Category.objects.get(name__icontains=category)
+                    filter_args["category"] = categoryInstance
+            else:
+                if latest_get_request[0] == 'query':
+                    filter_args = {}
+                    filter_args["name__icontains"] = query
+                elif latest_get_request[0] == 'CategoryQuery':
+                    filter_args = {}
+                    categoryInstance = Category.objects.get(name__icontains=category)
+                    filter_args["category"] = categoryInstance
+        except:
+            pass
         if sort_by == None or sort_by == "none":
             return Item.objects.filter(**filter_args)
         if sort_by == "ascending":
