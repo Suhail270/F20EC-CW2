@@ -61,7 +61,7 @@
 
       tr {
           border-radius: 10px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
           margin-bottom: 10px;
       }
 
@@ -151,7 +151,7 @@
   </style>
   <div class="table-container">
       {% if cart_items %}
-      <div><strong>Total Amount: {{cart_amt}}</strong></div>
+      
     <table class="table-style">
       <thead >
           <tr >
@@ -183,6 +183,7 @@
   </tr>
     
     {% endfor %}
+    <td colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
   </tbody>
   </table>
   {%endif%}
