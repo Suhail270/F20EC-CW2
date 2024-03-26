@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from sales.views import (CartListView,add_to_cart,add_to_wishlist,load_cart_items,load_wishlist,CategoryView, change_quantity,OrdersView)
 
-from users.views import (CategoryFilterView, LandingPageView, 
+from users.views import (LandingPageView, 
                          SignupView, 
                          ServicesView, 
                          VisionView, 
@@ -27,7 +27,6 @@ from users.views import (CategoryFilterView, LandingPageView,
                          PaymentSuccessView,
                          TrialSuccessView,
                          ItemListView,
-                         SearchView,
                          LogisticsView
                          )
 from django.contrib.auth.views import (
@@ -46,8 +45,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # path('', OurTeamView.as_view(), name='landing-page'),
     path('', ItemListView.as_view(), name='landing-page'),
-    path('search/', SearchView.as_view(), name='products-list'),
-    path('filter/', CategoryFilterView.as_view(), name='products-list-category'),
+    path('search/', ItemListView.as_view(), name='products-list'),
+    path('filter/', ItemListView.as_view(), name='products-list-category'),
     path('add_to_cart/<int:id>/',sales.views.add_to_cart,name='add_to_cart'),
     path('remove_from_cart/<int:id>/',sales.views.remove_from_cart,name='remove_from_cart'),
     path('move_to_wishlist/<int:id>/',sales.views.move_to_wishlist,name='move_to_wishlist'),

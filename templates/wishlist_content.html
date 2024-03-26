@@ -71,7 +71,7 @@
       <button class="quantity-btn" onclick="wquantityFunc('{% url 'ajax_change_quantity' id=wishlist_item.id %}', -1, {{wishlist_item.id}});" >-</button>
     </div>
   </td>
-  <td>{{wishlist_item.item.retail_price}}</td>
+  <td> £ {{wishlist_item.item.retail_price}}</td>
   <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="wremoveItem('{% url 'remove_from_wishlist' id=wishlist_item.id %}', {{wishlist_item.id}})"></td>
   <td><button class="move-item-icon" onclick="wmoveItem('{% url 'move_to_cart' id=wishlist_item.id %}', {{wishlist_item.id}})">Move to Cart</button></td>
 
