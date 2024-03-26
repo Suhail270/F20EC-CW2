@@ -17,7 +17,7 @@
       <div class="lg:w-1/2 md:w-1/2 p-4 w-full">
         <div class="details-container">
           <h1 class="mb-6 text-2xl"><strong>{{ object.name }}</strong></h1> <!-- Increased item name size -->
-          <p class="mb-4"><strong>Category:</strong> {{ object.category_tree }}</p> <!-- Added more space after each row -->
+          <p class="mb-4"><strong>Category:</strong> {{ object.category }}</p> <!-- Added more space after each row -->
           <p class="mb-4"><strong>Retail Price:</strong> £ {{ object.retail_price }}</p> <!-- Added more space after each row -->
           <p class="mb-4"><strong>Description:</strong> {{ object.description }}</p> <!-- Added more space after each row -->
           <button onclick="add_item('{% url 'add_to_wishlist' id=object.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
