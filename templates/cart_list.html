@@ -14,6 +14,7 @@
       success: function (data) {
         row_id = "#row" + id;
         $(row_id).remove();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
@@ -32,17 +33,23 @@
       success: function (data) {
         qid = "#quantity" + id;
         $(qid).val(data.quantity);
+        $(qid).attr('value', data.quantity);
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
-  function moveItem(url, id) {
+  function moveItem(url, id, quantity) {
     $.ajax({
       url: url,
       method: "POST",
+      data: {
+        'quantity': quantity
+      },
       success: function (data) {
         row_id = "#row" + id;
         $(row_id).remove();
         get_wishlist();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
@@ -182,11 +189,11 @@
     </td>
     <td> £ {{cart_item.item.retail_price}}</td>
     <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="removeItem('{% url 'remove_from_cart' id=cart_item.id %}', {{cart_item.id}})"></td>
-    <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}})">Move to Wishlist</button></td>
+    <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}}, $('#quantity{{cart_item.id}}').attr('value'))">Move to Wishlist</button></td>
   </tr>
     
     {% endfor %}
-    <td colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
+    <td id="totalAmount" colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
   </tbody>
   </table>
   {%endif%}

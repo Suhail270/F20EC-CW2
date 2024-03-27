@@ -15,6 +15,7 @@
       success: function (data) {
         qid = "#wquantity" + id;
         $(qid).val(data.quantity);
+        $(qid).attr('value', data.quantity);
       }
     });
   }
@@ -28,14 +29,18 @@
       }
     });
   }
-  function wmoveItem(url, id) {
+  function wmoveItem(url, id, quantity) {
     $.ajax({
       url: url,
       method: "POST",
+      data: {
+        "quantity": quantity
+      },
       success: function (data) {
         row_id = "#wrow" + id;
         $(row_id).remove();
         get_list();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
@@ -76,7 +81,7 @@
   </td>
   <td> £ {{wishlist_item.item.retail_price}}</td>
   <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="wremoveItem('{% url 'remove_from_wishlist' id=wishlist_item.id %}', {{wishlist_item.id}})"></td>
-  <td><button class="move-item-icon" onclick="wmoveItem('{% url 'move_to_cart' id=wishlist_item.id %}', {{wishlist_item.id}})">Move to Cart</button></td>
+  <td><button class="move-item-icon" onclick="wmoveItem('{% url 'move_to_cart' id=wishlist_item.id %}', {{wishlist_item.id}}, $('#wquantity{{wishlist_item.id}}').attr('value'))">Move to Cart</button></td>
 
 </tr>
   
