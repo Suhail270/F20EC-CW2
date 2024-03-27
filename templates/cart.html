@@ -1,26 +1,40 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block script %} <script src="https://js.stripe.com/v3/"></script> {% endblock script%} 
+
 {% block content %}
+<style>body{
+  padding-top: 10%;
+  }
+  </style>
+  
+<div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
 
-<div id="temp" dataUrl="{% url 'ajax_load_cart_list'%}"></div>
+<section class="text-gray-600 body-font overflow-hidden" style="padding-top: 10px;">
 
-<section class="text-gray-600 body-font overflow-hidden">
-  <div id="item_list" class="container px-5 py-24 mx-auto">
+  <h1 style="padding: 0 0 0 30px; font-size: xx-large;"><strong>Cart Items</strong></h1>
+
+  <div id="item_list" class="px-5 py-10 mx-auto">
     {% comment %} cart_list.html {% endcomment %}
   </div>
 
-    <div class="flex justify-center">
-        <a href="{% url 'payment' %}" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full">Proceed to Payment</a>
-    </div>
+  
+  <h1 style="padding: 0 0 0 30px; font-size: xx-large;"><strong>Wishlist Items</strong> </h1>
 
-</section>
+  <div id="wishlist" class=" px-5 py-10 mx-auto">
+    {% comment %} wishlist_contents.html {% endcomment %}
+  </div>
+
+    <div class="flex justify-center" style="padding: 10px;">
+<div id="urls" cartUrl="{% url 'ajax_load_cart_list'%}" wishlistUrl="{% url 'ajax_load_wishlist'%}"></div>
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
   function get_list() {
-    var url = $("#temp").attr("dataUrl");
+    var url = $("#urls").attr("cartUrl");
     // var fieldId = $(this).find("option:selected").text();
     // var period = document.getElementById('selectPeriod').value
     // var agent = document.getElementById('selectAgent').value
@@ -28,12 +42,27 @@
       url: url,
       data: {},
       success: function (data) {
-        console.log(data)
         $("#item_list").html(data.h);
+        console.log('here');
+      }
+    });
+  }
+  function get_wishlist() {
+    var url = $("#urls").attr("wishlistUrl");
+    // var fieldId = $(this).find("option:selected").text();
+    // var period = document.getElementById('selectPeriod').value
+    // var agent = document.getElementById('selectAgent').value
+    $.ajax({
+      url: url,
+      data: {},
+      success: function (data) {
+        $("#wishlist").html(data.h);
+        console.log('here');
       }
     });
   }
   get_list();
+  get_wishlist();
 </script>
 
 {% endblock content %}
