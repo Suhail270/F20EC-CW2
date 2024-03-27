@@ -72,6 +72,9 @@
         
         </div>
         {%endfor%}
+        {% if not orders %}
+            <center><p style="padding: 10px; font-size: medium;">No orders placed!</p></center>
+        {%endif%}
     </div>
 
   
