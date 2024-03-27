@@ -50,7 +50,7 @@
       .table-container{
         padding: 10px;
         /* display: flex; */
-      width: 100%;
+        width: 100%;
       }
 
       .table-style {
@@ -61,7 +61,7 @@
 
       tr {
           border-radius: 10px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
           margin-bottom: 10px;
       }
 
@@ -151,7 +151,7 @@
   </style>
   <div class="table-container">
       {% if cart_items %}
-      <div><strong>Total Amount: {{cart_amt}}</strong></div>
+      
     <table class="table-style">
       <thead >
           <tr >
@@ -177,12 +177,13 @@
       <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}}, false);" >-</button>
     </div>
     </td>
-    <td>{{cart_item.item.retail_price}}</td>
+    <td> £ {{cart_item.item.retail_price}}</td>
     <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="removeItem('{% url 'remove_from_cart' id=cart_item.id %}', {{cart_item.id}})"></td>
     <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}})">Move to Wishlist</button></td>
   </tr>
     
     {% endfor %}
+    <td colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
   </tbody>
   </table>
   {%endif%}

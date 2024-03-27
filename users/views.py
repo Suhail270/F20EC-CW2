@@ -45,7 +45,14 @@ class OurTeamView(generic.TemplateView):
     template_name = "team.html"
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
+    
+def shorten_cat_name(name):
+        words = name.split()
+        if len(words) >= 2:
+            return ' '.join(words[:2])
+        else:
+            return name
+        
 class ItemListView(generic.ListView):
     template_name = "products-display.html"
     context_object_name = "prods_list"
@@ -57,22 +64,44 @@ class ItemListView(generic.ListView):
         query = self.request.GET.get('query')
         filter_args = {}
         print("query is :", category)
-        if query is not None:
-            filter_args["name__icontains"] = query
-        if category is not None and category != "none":
-            categoryInstance = Category.objects.get(name=category)
-            filter_args["category"] = categoryInstance
+        latest_get_request = list(self.request.GET.keys())
+        try:
+            if latest_get_request[0] == 'sort_by':
+                print("incase of sort")
+                print(latest_get_request[1])
+                if latest_get_request[1] == 'query':
+                    filter_args = {}
+                    filter_args["name__icontains"] = query
+                elif latest_get_request[1] == 'CategoryQuery':
+                    filter_args = {}
+                    categoryInstance = Category.objects.get(name__icontains=category)
+                    filter_args["category"] = categoryInstance
+            else:
+                if latest_get_request[0] == 'query':
+                    filter_args = {}
+                    filter_args["name__icontains"] = query
+                elif latest_get_request[0] == 'CategoryQuery':
+                    filter_args = {}
+                    categoryInstance = Category.objects.get(name__icontains=category)
+                    filter_args["category"] = categoryInstance
+        except:
+            pass
         if sort_by == None or sort_by == "none":
             return Item.objects.filter(**filter_args)
         if sort_by == "ascending":
             return Item.objects.filter(**filter_args).order_by('retail_price')
         if sort_by == "descending":
             return Item.objects.filter(**filter_args).order_by('-retail_price')
+        
     
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         categories = (Category.objects.all()[:10])
-        context['categories'] = categories
+        categories_list = []
+        for i in range(0,len(categories)): 
+            categories_list.append(shorten_cat_name(categories[i].name))
+        context['categories'] = categories_list
         return context
     
 class MembershipPlanView(generic.TemplateView):

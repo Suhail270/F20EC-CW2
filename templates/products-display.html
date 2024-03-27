@@ -6,7 +6,7 @@
 <section class="text-gray-600 body-font mt-32">
   {% include 'category.html' %}
   <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
-    <label for="sort_by">Sort by:</label>
+    <label for="sort_by" style="margin-left: 35px;">Sort by:</label>
     <select name="sort_by" id="sort_by">
       <option value="none">Relevance</option>
       <option value="descending">Price (descending)</option>
@@ -16,8 +16,9 @@
 
   <div class="container px-5 py-24 mx-auto" style="padding-top: 20px;">
     <div class="flex flex-wrap -m-4">
+      {% if prods_list%}
       {% for prod in prods_list %}
-      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px;"> <!-- Reduced margin-bottom -->
+      <div class="lg:w-1/4 md:w-1/2 p-4 w-full product-container" style="margin-bottom: 20px; min-width: 250px;"> <!-- Reduced margin-bottom -->
         <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" style="height: 300px;"> <!-- Reduced height of image container -->
           <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{prod.image}}">
         </a>      
@@ -27,7 +28,7 @@
             <a href="{% url 'item_detail' pk=prod.id %}" class="block relative rounded overflow-hidden" >
               <h2 class="text-gray-900 title-font text-lg font-medium">{{prod.name}}</h2>
             </a>
-            <p class="mt-1">{{prod.retail_price}}</p>
+            <p class="mt-1"> £ {{prod.retail_price}}</p>
           </div>
           <div class="mt-0"> <!-- Added text-right class and adjusted margin -->
             <button onclick="add_item('{% url 'add_to_wishlist' id=prod.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
@@ -36,10 +37,15 @@
         </div>
       </div>
       {% endfor %}
+      {%endif%}
+      {%if not prods_list%}
+      <div style="text-align: center; padding: auto;"><strong><p>No products to display</p></strong></div>
+      {%endif%}
     </div>
   </div>
 
   {% comment %} Pagination code from the django docs {% endcomment %}
+  <div class="pagination-container" style="text-align: center; margin-top: 20px;"> <!-- Added container and styles -->
   <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -56,6 +62,7 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </span>
+  </div>
   </div>
 
 </section>
