@@ -7,7 +7,21 @@
 });
 // 0 for null values// 8 for backspace // 48-57 for 0-9 numbers
 // has context menu
-  function quantityFunc(url, diff, id, alt) {
+  function removeItem(url, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      success: function (data) {
+        row_id = "#row" + id;
+        $(row_id).remove();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+      }
+    });
+  }
+  function quantityFunc(url, diff, id, alt, val, revUrl) {
+    if ((alt && diff == 0) || (val == 1 && diff == -1)) {
+      return removeItem(revUrl, id);
+    }
     $.ajax({
       url: url,
       method: "POST",
@@ -19,27 +33,23 @@
       success: function (data) {
         qid = "#quantity" + id;
         $(qid).val(data.quantity);
+        $(qid).attr('value', data.quantity);
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
-  function removeItem(url, id) {
+  function moveItem(url, id, quantity) {
     $.ajax({
       url: url,
       method: "POST",
-      success: function (data) {
-        row_id = "#row" + id;
-        $(row_id).remove();
-      }
-    });
-  }
-  function moveItem(url, id) {
-    $.ajax({
-      url: url,
-      method: "POST",
+      data: {
+        'quantity': quantity
+      },
       success: function (data) {
         row_id = "#row" + id;
         $(row_id).remove();
         get_wishlist();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
       }
     });
   }
@@ -175,18 +185,18 @@
     <td>{{cart_item.category}}</td>
     <td style="align-items: self-start;">
     <div class="quantity-container">
-      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}}, false);" >+</button>
-      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}" onblur="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', $('#quantity{{cart_item.id}}').val(), {{cart_item.id}}, true);">
-      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}}, false);" >-</button>
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}}, false, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');" >+</button>
+      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}" onblur="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', $('#quantity{{cart_item.id}}').val(), {{cart_item.id}}, true, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}}, false, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');" >-</button>
     </div>
     </td>
     <td> £ {{cart_item.item.retail_price}}</td>
     <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="removeItem('{% url 'remove_from_cart' id=cart_item.id %}', {{cart_item.id}})"></td>
-    <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}})">Move to Wishlist</button></td>
+    <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}}, $('#quantity{{cart_item.id}}').attr('value'))">Move to Wishlist</button></td>
   </tr>
     
     {% endfor %}
-    <td colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
+    <td id="totalAmount" colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
   </tbody>
   </table>
   <div class="flex justify-center" style="padding: 10px;">

@@ -240,22 +240,28 @@ def add_to_cart(request, id):
 
     item = get_object_or_404(Item, id=id)
     cart = Cart.objects.filter(user=request.user).first()
+    quantity = request.POST.get("quantity")
+
+    if quantity is None:
+        quantity = 1
+    else:
+        quantity = int(quantity)
     
     cart_item, item_created = CartItem.objects.get_or_create(
         cart=cart,
         item=item,
-        quantity=1
+        quantity=quantity
     )
 
     if not item_created:
-        cart_item.quantity += 1
+        cart_item.quantity += quantity
         cart_item.save()
         
     else:
-        cart.total_amount += item.retail_price
+        cart.total_amount += item.retail_price * quantity
         cart.save()
 
-    return JsonResponse({'auth': True, 'message': 'Item added to cart successfully'})
+    return JsonResponse({'auth': True, 'message': 'Item added to cart successfully', 'total_amount': cart.total_amount})
 
 
 @csrf_exempt
@@ -266,7 +272,7 @@ def remove_from_cart(request, id):
     cart = Cart.objects.filter(user=request.user).first()
     cart.total_amount -= amount
     cart.save()
-    return JsonResponse({'message': 'Item deleted from cart'})
+    return JsonResponse({'message': 'Item deleted from cart', "total_amount": cart.total_amount})
 
 @csrf_exempt
 def remove_from_wishlist(request, id):
@@ -281,14 +287,21 @@ def add_to_wishlist(request, id):
     user = request.user
     item = get_object_or_404(Item, id=id)
     wishlist, created = Wishlist.objects.get_or_create(user=user)
+    quantity = request.POST.get("quantity")
+
+    if quantity is None:
+        quantity = 1
+    else:
+        quantity = int(quantity)
     
     wishlist_item, created = WishlistItem.objects.get_or_create(
         wishlist=wishlist,
-        item=item
+        item=item,
+        quantity=quantity
     )
 
     if not created:
-        wishlist_item.quantity += 1
+        wishlist_item.quantity += quantity
         wishlist_item.save()
 
     return JsonResponse({'auth': True, 'message': 'Item added to wishlist successfully'})
@@ -304,27 +317,34 @@ def change_quantity(request, id):
         model = WishlistItem
     list_item = model.objects.get(id=id)
     
-    amount = list_item.item.retail_price * diff
-    list_item.quantity += diff
+    if alt == "true":
+        amount = (list_item.quantity - diff) * list_item.item.retail_price
+        list_item.quantity = diff
+    else:
+        amount = list_item.item.retail_price * diff
+        list_item.quantity += diff
     list_item.save()
-    cart = Cart.objects.filter(user=request.user).first()
-    cart.total_amount += amount
-    cart.save()
-    return JsonResponse({"quantity": list_item.quantity})
+    total_amount = None
+    if list_type == "cart":
+        cart = Cart.objects.filter(user=request.user).first()
+        cart.total_amount += amount
+        cart.save()
+        total_amount = cart.total_amount
+    return JsonResponse({"quantity": list_item.quantity, "total_amount": total_amount})
 
 @csrf_exempt
 def move_to_cart(request, id):
     item = WishlistItem.objects.get(id=id).item
     remove_from_wishlist(request, id)
-    add_to_cart(request, item.id)
-    return JsonResponse({})
+    r = add_to_cart(request, item.id)
+    return r
 
 @csrf_exempt
 def move_to_wishlist(request, id):
     item = CartItem.objects.get(id=id).item
-    remove_from_cart(request, id)
+    r = remove_from_cart(request, id)
     add_to_wishlist(request, item.id)
-    return JsonResponse({})
+    return r
 
 class OrdersView(LoginRequiredMixin, generic.ListView):
     template_name = "orders.html"
