@@ -1,22 +1,243 @@
-{% for cart_item in cart_items %}
-  <div class="-my-8 divide-y-2 divide-gray-100">
-    <div class="py-8 flex flex-wrap md:flex-nowrap">
-      <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
-        <span class="font-semibold title-font text-gray-700">CATEGORY</span>
-        <span class="mt-1 text-gray-500 text-sm">12 Jun 2019</span>
-      </div>
-      <div class="md:flex-grow">
-        <h2 class="text-2xl font-medium text-gray-900 title-font mb-2">{{ cart_item.item.name }}</h2>
-        <p class="leading-relaxed">Glossier echo park pug, church-key sartorial biodiesel vexillologist pop-up snackwave ramps cornhole. Marfa 3 wolf moon party messenger bag selfies, poke vaporware kombucha lumbersexual pork belly polaroid hoodie portland craft beer.</p>
-        <a class="text-blue-500 inline-flex items-center mt-4">Learn More
-          <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14"></path>
-            <path d="M12 5l7 7-7 7"></path>
-          </svg>
-        </a>
-      </div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  document.querySelector(".quantity-input").addEventListener("keypress", function (evt) {
+    if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
+    {        evt.preventDefault();
+    }
+});
+// 0 for null values// 8 for backspace // 48-57 for 0-9 numbers
+// has context menu
+  function removeItem(url, id) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      success: function (data) {
+        row_id = "#row" + id;
+        $(row_id).remove();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+        
+          table.innerHTML = replacementText.innerHTML;
+    }
+      }
+    });
+  }
+  function quantityFunc(url, diff, id, alt, val, revUrl) {
+    if ((alt && diff == 0) || (val == 1 && diff == -1)) {
+      return removeItem(revUrl, id);
+    }
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        "diff": diff,
+        "list_type": "cart",
+        "alt": alt
+      },
+      success: function (data) {
+        qid = "#quantity" + id;
+        $(qid).val(data.quantity);
+        $(qid).attr('value', data.quantity);
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+          table.innerHTML = replacementText.innerHTML;
+    }
+      }
+    });
+  }
+  function moveItem(url, id, quantity) {
+    $.ajax({
+      url: url,
+      method: "POST",
+      data: {
+        'quantity': quantity
+      },
+      success: function (data) {
+        row_id = "#row" + id;
+        $(row_id).remove();
+        get_wishlist();
+        $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+        
+          table.innerHTML = replacementText.innerHTML;
+    }
+      }
+    });
+  }
+</script>
+  
+  <div class="-my-8 divide-y-2 divide-gray-100 ">
+    <style>
+      .table-container{
+        padding: 10px;
+        /* display: flex; */
+        width: 100%;
+      }
+
+      .table-style {
+          border-collapse: collapse;
+          text-align: center;
+          width: 100%;
+      }
+
+      tr {
+          border-radius: 10px;
+          /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+          margin-bottom: 10px;
+      }
+
+      .img {
+          padding: 10px;
+          align-self: center;
+      }
+
+      .img img {
+          max-width: 200px; 
+          max-height: 150px; 
+          width: auto; 
+          height: auto; 
+          display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          margin-left: auto;
+          margin-right: auto;
+}
+
+      .quantity-container {
+        display: flex;
+        flex-direction: column;
+        width: 110px;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        margin-top: auto;
+        margin-bottom: auto;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .quantity-input {
+          width: 40px;
+          text-align: center;
+          margin: 4px 8px 4px 8px;
+          
+          border: none;
+          background: none;
+          outline: none;
+      }
+
+      .quantity-btn {
+          font-size: 16px;
+          width: 20px;
+          height: 20px;
+          background-color: gray;
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          outline: none;
+      }
+
+      .quantity-btn:hover {
+          background-color: #154c79;
+      }
+      th{
+        background-color: #f2f2f2;
+      }
+      th,
+      td {
+          border: 1px solid #dddddd;
+          padding: 8px;
+          text-align: center; /* Center align content in table cells */
+      }
+      .delete-icon {
+        color: red;
+        cursor: pointer;
+        width: 40px;
+        height: 30px;
+        display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          margin-left: auto;
+          margin-right: auto;
+    }
+    .move-item-icon{
+        cursor: pointer;
+        background-color: #154c79;
+        color: #fff;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-size: 16px;
+    }
+    input[type='number']::-webkit-inner-spin-button, 
+    input[type='number']::-webkit-outer-spin-button { 
+    -webkit-appearance: none;    margin: 0;
+    }
+  </style>
+  <div class="table-container" id="table-contain">
+      {% if cart_items|length != 0  %}
+      
+    <table class="table-style">
+      <thead >
+          <tr >
+              <th >Image</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Delete</th>
+              <th>Actions</th>
+          </tr>
+      </thead>
+      <tbody >
+    {% for cart_item in cart_items %}
+    <tr id="row{{cart_item.id}}">
+    <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
+    <td ><a href="{% url 'item_detail' pk=cart_item.item.id %}" > 
+      {{ cart_item.item.name }}
+    </a>
+      </td>
+    <td>{{cart_item.category}}</td>
+    <td style="align-items: self-start;">
+    <div class="quantity-container">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', 1, {{cart_item.id}}, false, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');" >+</button>
+      <input id="quantity{{cart_item.id}}" type="number" class="quantity-input" value="{{cart_item.quantity}}" onblur="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', $('#quantity{{cart_item.id}}').val(), {{cart_item.id}}, true, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');">
+      <button class="quantity-btn" onclick="quantityFunc('{% url 'ajax_change_quantity' id=cart_item.id %}', -1, {{cart_item.id}}, false, $('#quantity{{cart_item.id}}').val(), '{% url 'remove_from_cart' id=cart_item.id %}');" >-</button>
     </div>
+    </td>
+    <td> £ {{cart_item.item.retail_price}}</td>
+    <td><img class="delete-icon" src="/static/warehouse/images/delete_icon-nobg.png" onclick="removeItem('{% url 'remove_from_cart' id=cart_item.id %}', {{cart_item.id}})"></td>
+    <td><button class="move-item-icon" onclick="moveItem('{% url 'move_to_wishlist' id=cart_item.id %}', {{cart_item.id}}, $('#quantity{{cart_item.id}}').attr('value'))">Move to Wishlist</button></td>
+  </tr>
+    
+    {% endfor %}
+    <td id="totalAmount" colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
+  </tbody>
+  </table>
+  <div class="flex justify-center" style="padding: 10px;">
+    <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded" style="background-color: #154c79;">Confirm Order</a>
   </div>
-{% empty %}
-<p>empty cart</p>
-{% endfor %}
+  {%endif%}
+</div>
+  {% if cart_items|length == 0 %}
+<p style="padding: 10px;" id="empty-cart">No items in cart!</p>
+{%endif%}
+  
+</div>

@@ -9,10 +9,10 @@
         <a class="hover:text-blue-500" href="{% url 'signup' %}">Don't have an account?</a>
     </div>
 
-    <form method="post" class="mt-5">
+    <form method="post" class="mt-10">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md" style="background-color: #154c79;">
             Login
         </button>
     </form>

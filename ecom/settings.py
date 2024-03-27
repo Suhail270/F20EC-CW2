@@ -90,12 +90,11 @@ WSGI_APPLICATION = "ecom.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sb2050',  
-        'USER': 'sb2050',
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'mm2107',  
+        'USER': 'mm2107',
         'PASSWORD': 'wnd4VKSANY3',
         'HOST': '132.145.18.222',
-        'PORT': '',
     }
 }
 
@@ -151,7 +150,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'users.User'
 
-LOGIN_REDIRECT_URL = "/membership-plans/"
+LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/login"
 LOGOUT_REDIRECT_URL = "/"
 

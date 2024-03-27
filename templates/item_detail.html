@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="text-gray-600 body-font mt-32"> <!-- Increased margin-top -->
+  <!-- Include navbar -->
+  {% include 'navbar.html' %}
+
+  <!-- Item details -->
+  <div class="container px-5 py-24 mx-auto">
+    <div class="flex flex-wrap -m-4">
+      <div class="lg:w-1/2 md:w-1/2 p-4 w-full">
+        <div class="image-container border-gray-300 border">
+          <img src="{{ object.image }}" alt="{{ object.name }}" class="image">
+        </div>
+      </div>
+      <div class="lg:w-1/2 md:w-1/2 p-4 w-full">
+        <div class="details-container">
+          <h1 class="mb-6 text-2xl"><strong>{{ object.name }}</strong></h1> <!-- Increased item name size -->
+          <p class="mb-4"><strong>Category:</strong> {{ object.category }}</p> <!-- Added more space after each row -->
+          <p class="mb-4"><strong>Retail Price:</strong> £ {{ object.retail_price }}</p> <!-- Added more space after each row -->
+          <p class="mb-4"><strong>Description:</strong> {{ object.description }}</p> <!-- Added more space after each row -->
+          <button onclick="add_item('{% url 'add_to_wishlist' id=object.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Wishlist</button>
+          <button onclick="add_item('{% url 'add_to_cart' id=object.id %}')" class="text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded w-full mb-2" style="background-color: #154c79;">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Adjustments for item details */
+  .details-container {
+    margin-top: 40px; /* Increased margin-top */
+    padding: 20px;
+  }
+  .details-container p {
+    margin-bottom: 20px; /* Increased space after each line */
+  }
+  .details-container h1 {
+    margin-bottom: 30px; /* Increased space after heading */
+  }
+  .image-container {
+    width: 700px; /* Set a fixed width for the container */
+    max-width: 100%;
+    height: 700px;
+    overflow: hidden;
+    margin: 0 auto; /* Center the container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+  function add_item(listUrl) {
+    $.ajax({
+        method: "POST",
+        url: listUrl,
+        success: function (data) {
+            if (!data.auth) {
+                window.location = "{% url 'login' %}";
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                });
+            }
+        }
+    });
+}
+</script>
+
+{% endblock content %}
