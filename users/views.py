@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse
 from .forms import CategoryForm, CustomUserCreationForm,SearchForm, UserModelForm,LogsisticsForm
 from sales.models import Category, Item, Cart, CartItem, OrderItem, Order
-# Create your views here.
+
 
 class LandingPageView(generic.ListView):
     template_name = "landing.html"
@@ -39,7 +39,6 @@ class VisionView(generic.TemplateView):
     template_name = "vision.html"
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
 
 class OurTeamView(generic.TemplateView):
     template_name = "team.html"

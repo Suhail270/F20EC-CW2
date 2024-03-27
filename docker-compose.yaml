@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  web:
+    build: 
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - db
+
+  db:
+    platform: linux/x86_64
+    image: mysql:5.7
+    environment:
+      - MYSQL_HOST=132.145.18.222
+      - MYSQL_ROOT_PASSWORD=wnd4VKSANY3
+      - MYSQL_DATABASE=sb2050
+      - MYSQL_USER=sb2050
+      - MYSQL_PASSWORD=wnd4VKSANY3
+    ports:
+      - "3000:3000"
+
+  stripe:
+    build: 
+      context: .
+    environment:
+      - STRIPE_SECRET_KEY=k_test_51Os180JDw3WYrLo5uSYV1Wgv6UfqWv1wiEoKMyVnYjOFjF3UcyaxMQE5Xya0qfmyGkhfx4GafZITxtP1VVw9G5Xt00C0OEUdxM
