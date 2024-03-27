@@ -15,6 +15,14 @@
         row_id = "#row" + id;
         $(row_id).remove();
         $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+        
+          table.innerHTML = replacementText.innerHTML;
+    }
       }
     });
   }
@@ -35,6 +43,12 @@
         $(qid).val(data.quantity);
         $(qid).attr('value', data.quantity);
         $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+          table.innerHTML = replacementText.innerHTML;
+    }
       }
     });
   }
@@ -50,6 +64,14 @@
         $(row_id).remove();
         get_wishlist();
         $('#totalAmount').html(`Total Amount: <strong>£ ${data.total_amount}</strong>`);
+        if(data.total_amount == 0){
+          
+          var table = document.getElementById('table-contain');
+          var replacementText = document.createElement('div');
+          replacementText.textContent = 'No items in Cart!';
+        
+          table.innerHTML = replacementText.innerHTML;
+    }
       }
     });
   }
@@ -104,6 +126,11 @@
         border: none;
         outline: none;
         box-shadow: none;
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .quantity-input {
@@ -144,7 +171,12 @@
         color: red;
         cursor: pointer;
         width: 40px;
-        height: 30px
+        height: 30px;
+        display: flex; 
+          justify-content: center; 
+          align-items: center; 
+          margin-left: auto;
+          margin-right: auto;
     }
     .move-item-icon{
         cursor: pointer;
@@ -159,8 +191,8 @@
     -webkit-appearance: none;    margin: 0;
     }
   </style>
-  <div class="table-container">
-      {% if cart_items %}
+  <div class="table-container" id="table-contain">
+      {% if cart_items|length != 0  %}
       
     <table class="table-style">
       <thead >
@@ -203,8 +235,9 @@
     <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded" style="background-color: #154c79;">Confirm Order</a>
   </div>
   {%endif%}
-  {% if not cart_items %}
-<p style="padding: 10px;">No items in cart!</p>
+</div>
+  {% if cart_items|length == 0 %}
+<p style="padding: 10px;" id="empty-cart">No items in cart!</p>
 {%endif%}
-  </div>
+  
 </div>
