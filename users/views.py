@@ -79,7 +79,10 @@ class ItemListView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         categories = (Category.objects.all()[:10])
-        context['categories'] = categories
+        categories_list = []
+        for i in range(0,len(categories)): 
+            categories_list.append(shorten_cat_name(categories[i].name))
+        context['categories'] = categories_list
         return context
     
 class MembershipPlanView(generic.TemplateView):

@@ -80,7 +80,7 @@ class CreateStripeCheckoutSessionView(View):
                 {
                     "price_data": {
                         "currency": "gbp",
-                        "unit_amount": int(price),
+                        "unit_amount": int(price)*100,
                         "product_data": {
                             "name": "Secure transaction to WattMart™, Powered by Stripe",
                             "description": "Order placed",
@@ -122,9 +122,10 @@ class PaymentSuccessView(generic.TemplateView):
                     item=cart_item.item,
                     quantity=cart_item.quantity
                 )
+                cart_item.delete()
 
-            cart.delete()
-
+            cart.total_amount = 0
+            cart.save()
         return response
 
 class SuccessView(generic.TemplateView):

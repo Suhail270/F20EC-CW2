@@ -41,7 +41,7 @@
     <div id="orders_list" class="table-container">
         {%for order in orders%}
         <div class="table-container">
-            <div><strong>Ordered Date: {{order.ordered_date}}</strong><br><strong>Total Amount: {{order.total_amount}}</strong></div>
+            <div>Ordered Date: <strong>{{order.ordered_date}}</strong><br>Total Amount:<strong> £ {{order.total_amount}}</strong></div>
         
             <table class="table-style">
                 <colgroup>
@@ -58,7 +58,11 @@
                     {%for orItem in orders_items%}
                     {%if orItem.order  ==  order%}
                         <tr>
-                            <td>{{orItem.item}}</td>
+                            <td>
+                            <a href="{% url 'item_detail' pk=orItem.item.id %}" > 
+                                {{orItem.item}}
+                              </a>
+                            </td>
                             <td>{{orItem.quantity}}</td>
                         </tr>  
                     {%endif%}  
@@ -68,6 +72,9 @@
         
         </div>
         {%endfor%}
+        {% if not orders %}
+            <center><p style="padding: 10px; font-size: medium;">No orders placed!</p></center>
+        {%endif%}
     </div>
 
   
