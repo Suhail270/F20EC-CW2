@@ -168,7 +168,10 @@
     {% for cart_item in cart_items %}
     <tr id="row{{cart_item.id}}">
     <td class="img"><img alt="ecommerce" height="150" width="200"  src="{{cart_item.item.image}}" ></td>
-    <td >{{ cart_item.item.name }}</td>
+    <td ><a href="{% url 'item_detail' pk=cart_item.item.id %}" > 
+      {{ cart_item.item.name }}
+    </a>
+      </td>
     <td>{{cart_item.category}}</td>
     <td style="align-items: self-start;">
     <div class="quantity-container">
@@ -186,6 +189,9 @@
     <td colspan="7" style="text-align: end;">Total Amount: <strong>£ {{cart_amt}}</strong></td>
   </tbody>
   </table>
+  <div class="flex justify-center" style="padding: 10px;">
+    <a href="{% url 'logistics' %}" class=" text-white font-bold py-2 px-4 rounded" style="background-color: #154c79;">Confirm Order</a>
+  </div>
   {%endif%}
   {% if not cart_items %}
 <p style="padding: 10px;">No items in cart!</p>
