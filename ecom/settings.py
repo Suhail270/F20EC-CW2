@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-+h@ensr_^+=@xunl9q51#2jg56#maosdwlu8g=05=7__8j_5jk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -91,9 +91,9 @@ WSGI_APPLICATION = "ecom.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': 'ppn2000',  
-        'USER': 'ppn2000',
-        'PASSWORD': 'wnd2VKSANY5',
+        'NAME': 'mm2107',  
+        'USER': 'mm2107',
+        'PASSWORD': 'wnd4VKSANY3',
         'HOST': '132.145.18.222',
     }
 }
@@ -152,7 +152,7 @@ AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/login"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/login"
 
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51Os180JDw3WYrLo5FvbOAH447xyFKEQ58k5YW0n30FJsGdECKULoK2snjaaNZBW35KPDGUk0PDgpPf6Cn8P0Al7H00S2zeeUc4'
 STRIPE_SECRET_KEY = 'sk_test_51Os180JDw3WYrLo5uSYV1Wgv6UfqWv1wiEoKMyVnYjOFjF3UcyaxMQE5Xya0qfmyGkhfx4GafZITxtP1VVw9G5Xt00C0OEUdxM'
