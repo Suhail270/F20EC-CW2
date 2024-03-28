@@ -45,25 +45,26 @@
   </div>
 
   {% comment %} Pagination code from the django docs {% endcomment %}
-  <div class="pagination-container" style="text-align: center; margin-top: 20px;"> <!-- Added container and styles -->
-  <div class="pagination">
-    <span class="step-links">
+  <div class="pagination-container" style="text-align: center; margin-top: 20px;">
+    <div class="pagination">
+      <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+          <a href="?page=1" class="pagination-link">&laquo;</a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
         {% endif %}
-
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-
+  
+        {% for i in paginator.page_range %}
+          <a href="?page={{ i }}" class="pagination-box {% if page_obj.number == i %}active{% endif %}">{{ i }}</a>
+        {% endfor %}
+  
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+          <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">&raquo;</a>
         {% endif %}
-    </span>
+      </span>
+    </div>
   </div>
-  </div>
+  
 
 </section>
 
@@ -73,6 +74,46 @@
     display: flex; /* Added */
     flex-direction: column; /* Added */
   }
+
+  .pagination-container {
+  text-align: center;
+  margin-top: 20px;
+  }
+
+  .pagination {
+    display: inline-block;
+    border: 1px solid #154c79;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+
+  .pagination-link {
+    text-decoration: none;
+    color: #154c79; /* Blue color */
+    margin: 0 5px;
+  }
+
+  .pagination-box {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #154c79; /* Blue color */
+    text-decoration: none;
+  }
+
+  .pagination-box.active {
+    background-color: #154c79;
+    color: #fff;
+  }
+
+  .pagination-box:hover {
+    background-color: #a0aec0;
+    color: #fff;
+  }
+
+
 </style>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
