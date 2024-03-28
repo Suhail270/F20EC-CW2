@@ -90,7 +90,7 @@ class CreateStripeCheckoutSessionView(View):
                 }
             ],
             mode="payment",
-            success_url='http://13.51.175.126/payment_success/',
+            success_url='http://13.48.38.247/payment_success/',
             # cancel_url=,
         )
         
