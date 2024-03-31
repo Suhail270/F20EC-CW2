@@ -49,17 +49,17 @@
     <div class="pagination">
       <span class="step-links">
         {% if page_obj.has_previous %}
-          <a href="?page=1" class="pagination-link">&laquo;</a>
-          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
+          <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1" class="pagination-link">&laquo;</a>
+          <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
         {% endif %}
   
         {% for i in paginator.page_range %}
-          <a href="?page={{ i }}" class="pagination-box {% if page_obj.number == i %}active{% endif %}">{{ i }}</a>
+          <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ i }}" class="pagination-box {% if page_obj.number == i %}active{% endif %}">{{ i }}</a>
         {% endfor %}
   
         {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
-          <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">&raquo;</a>
+          <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
+          <a href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="pagination-link">&raquo;</a>
         {% endif %}
       </span>
     </div>
@@ -131,6 +131,12 @@
             .attr('value', currentParamsPD.get('query'))
             .appendTo('#sort-form');
     }
+    if (currentParamsPD.has('page')) {
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'page')
+            .attr('value', currentParamsPD.get('page'))
+            .appendTo('#sort-form');
+    }
 
   function add_item(listUrl) {
     $.ajax({
@@ -153,6 +159,8 @@
   const query = url.searchParams.get('query');
   const category = url.searchParams.get('CategoryQuery');
   const current_sort = url.searchParams.get('sort_by');
+  const page = url.searchParams.get('page');
+
   if (!(category == null || category === "None")) {
     console.log('here');
     let noneForm = '<form id="cat-form" method="GET" action="/filter/"><button class="category" onclick="submit" value="none" name="CategoryQuery">All Categories</button></form>';
@@ -162,6 +170,11 @@
     $('#sort_by').val("none");
   } else {
     $('#sort_by').val(current_sort);
+  }
+  if (page == null) {
+    $('#page').val("none");
+  } else {
+    $('#page').val(page);
   }
   $('#sort_by').change(() => {
     $('#sort-form').submit();

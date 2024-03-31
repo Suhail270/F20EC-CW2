@@ -67,8 +67,8 @@ class ItemListView(generic.ListView):
         if query is not None:
             filter_args["name__icontains"] = query
         if category is not None and category != "none":
-            categoryInstance = Category.objects.get(name__icontains=category)
-            filter_args["category"] = categoryInstance
+            categoryInstance = Category.objects.filter(name__icontains=category)
+            filter_args["category__in"] = categoryInstance
         if sort_by == None or sort_by == "none":
             return Item.objects.filter(**filter_args)
         if sort_by == "ascending":
