@@ -5,7 +5,7 @@
 
 <section class="text-gray-600 body-font mt-32">
   {% include 'category.html' %}
-  <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;">
+  <form id="sort-form" action="{% url 'products-list' %}" method="get" style="padding: 10px;padding-top: 30px;">
     <label for="sort_by" style="margin-left: 35px;">Sort by:</label>
     <select name="sort_by" id="sort_by">
       <option value="none">Relevance</option>
