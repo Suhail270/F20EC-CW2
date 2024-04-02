@@ -17,6 +17,15 @@ class LandingPageView(generic.ListView):
             return redirect("services")
         return super().dispatch(request, *args, **kwargs)
 
+class LogoutView(generic.RedirectView):
+    url = "/"
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        request.session.flush()
+        return response
+
+
 class SignupView(generic.CreateView):
     template_name = "registration/signup.html"
     form_class = CustomUserCreationForm

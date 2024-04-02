@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from sales.views import (CartListView,add_to_cart,add_to_wishlist,load_cart_items,load_wishlist,CategoryView, change_quantity,OrdersView)
 
-from users.views import (LandingPageView, 
+from users.views import (LandingPageView,
                          SignupView, 
                          ServicesView, 
                          VisionView, 
@@ -27,11 +27,11 @@ from users.views import (LandingPageView,
                          PaymentSuccessView,
                          TrialSuccessView,
                          ItemListView,
-                         LogisticsView
+                         LogisticsView,
+                         LogoutView
                          )
 from django.contrib.auth.views import (
     LoginView, 
-    LogoutView, 
     PasswordResetView, 
     PasswordResetDoneView,
     PasswordResetConfirmView,
@@ -40,6 +40,8 @@ from django.contrib.auth.views import (
 from sales.views import (ItemDetailView)
 import sales.views
 # from sales.templates.sales.fonts import helvetiker.typeface.json
+
+from django.urls import include, re_path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -72,6 +74,7 @@ urlpatterns = [
     path('password-reset-complete/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('login/', LoginView.as_view(), name='login'),
     path('category/', CategoryView.as_view(), name='categories'),
+    # re_path(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/login'}),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('logistics/', LogisticsView.as_view(), name='logistics'),
     path('item/<int:pk>/', ItemDetailView.as_view(), name='item_detail'),
