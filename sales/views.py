@@ -71,8 +71,10 @@ class CreateStripeCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         cart = Cart.objects.filter(user=request.user).first()
         price = cart.total_amount
+        user = self.request.user
+        user.address = request.POST.get('address')
+        user.save()
         if int(request.POST.get('mode_of_payment')) == ModeOfPayment.objects.get(name='Cash on Delivery').pk:
-            print("here")
             return redirect('success')
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],

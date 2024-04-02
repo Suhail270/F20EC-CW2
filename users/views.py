@@ -132,25 +132,9 @@ class LogisticsView(generic.CreateView):
         return context
 
     def form_valid(self, form):
-        order = form.save(commit=False)
-
         user = self.request.user
-        cart = Cart.objects.get(user=user)
-
+        print("user:" + user)
         user.address = form.cleaned_data['address']
         user.save()
-
-        order.user = self.request.user
-        order.total_amount = cart.total_amount
-        order.save()
-
-        # YOUR CODE FOR LATER USE
-        # cart_items = CartItem.objects.filter(cart=cart)
-        # for cart_item in cart_items:
-        #     order_item = OrderItem()
-        #     order_item.order = order
-        #     order_item.quantity = cart_item.quantity
-        #     order_item.item = cart_item.item
-        #     order_item.save()
             
         return super().form_valid(form)
